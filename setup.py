@@ -64,7 +64,11 @@ def parse_requirements(extras_require_map):
             else:
                 raise ValueError("Invalid version format")
 
-            if (major, minor) >= (2, 7):
+            if (major, minor) >= (2, 8):
+                # For torch 2.8+, skip xformers since a compatible xformers build is not available.
+                _install_requires.pop(_install_requires.index(xformers_version))
+                _install_requires.pop(_install_requires.index(autoawq_version))
+            elif (major, minor) >= (2, 7):
                 _install_requires.pop(_install_requires.index(xformers_version))
                 if patch == 0:
                     _install_requires.append("xformers==0.0.30")
