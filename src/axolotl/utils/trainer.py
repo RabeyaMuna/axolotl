@@ -391,6 +391,9 @@ def process_pretraining_datasets_for_packing(
 
 
 def calculate_total_num_steps(cfg, train_dataset, update=True):
+    sequence_parallel_degree = cfg.sequence_parallel_degree or 1
+    tensor_parallel_size = cfg.tensor_parallel_size or 1
+
     if (
         not cfg.total_num_tokens
         and not cfg.skip_prepare_dataset
@@ -442,8 +445,8 @@ def calculate_total_num_steps(cfg, train_dataset, update=True):
                     - 1
                 )
                 * cfg.num_epochs
-                * cfg.sequence_parallel_degree
-                * cfg.tensor_parallel_size
+                * sequence_parallel_degree
+                * tensor_parallel_size
             )
             LOG.debug(
                 f"total_num_tokens: {cfg.total_num_tokens:_}, total_num_steps: {total_num_steps:_}"
@@ -484,8 +487,8 @@ def calculate_total_num_steps(cfg, train_dataset, update=True):
                 math.floor(
                     data_loader_len
                     * cfg.num_epochs
-                    * cfg.sequence_parallel_degree
-                    * cfg.tensor_parallel_size
+                    * sequence_parallel_degree
+                    * tensor_parallel_size
                 )
             )
             if cfg.dataloader_drop_last:
@@ -511,8 +514,8 @@ def calculate_total_num_steps(cfg, train_dataset, update=True):
             math.ceil(
                 len(train_dataset)
                 * cfg.num_epochs
-                * cfg.sequence_parallel_degree
-                * cfg.tensor_parallel_size
+                * sequence_parallel_degree
+                * tensor_parallel_size
                 / cfg.batch_size
             )
         )
