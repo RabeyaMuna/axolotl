@@ -102,7 +102,8 @@ class AxolotlTrainer(
             Multipack (sample packing) batch sampler.
         """
         max_seq_length = get_not_null(
-            self.args.max_seq_length, getattr(self.args, "sequence_len", 2048)
+            self.args.max_seq_length,
+            get_not_null(getattr(self.args, "sequence_len", None), 2048),
         )
 
         if self.args.multipack_real_batches:
@@ -110,8 +111,8 @@ class AxolotlTrainer(
             batch_max_len = max_seq_length
         else:
             batch_size = 1
-            train_batch_size = (
-                self.state.train_batch_size or self.args.per_device_train_batch_size
+            train_batch_size = get_not_null(
+                self.state.train_batch_size, self.args.per_device_train_batch_size
             )
             batch_max_len = train_batch_size * max_seq_length
 
