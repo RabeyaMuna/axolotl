@@ -112,6 +112,10 @@ class AxolotlTrainingMixins:
         default=None,
         metadata={"help": "prefetch_factor argument to the dataloader"},
     )
+    dataset_num_proc: Optional[int] = field(
+        default=None,
+        metadata={"help": "Number of processes to use for dataset operations."},
+    )
     cosine_min_lr_ratio: Optional[float] = field(
         default=None,
         metadata={"help": "Minimum learning rate is min_lr_ratio * learning_rate"},
