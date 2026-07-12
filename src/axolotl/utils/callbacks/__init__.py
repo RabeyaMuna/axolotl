@@ -15,7 +15,6 @@ import numpy as np
 import pandas as pd
 import torch
 import torch.distributed as dist
-import wandb
 from datasets import load_dataset
 from optimum.bettertransformer import BetterTransformer
 from tqdm import tqdm
@@ -51,6 +50,16 @@ if TYPE_CHECKING:
 
 IGNORE_INDEX = -100
 LOG = get_logger(__name__)
+
+
+def _get_wandb():
+    try:
+        import wandb  # pylint: disable=import-outside-toplevel
+    except ImportError as err:
+        raise ImportError(
+            "Weights & Biases support requires a working wandb install"
+        ) from err
+    return wandb
 
 
 class SaveBetterTransformerModelCallback(
@@ -734,6 +743,7 @@ def log_prediction_callback_factory(trainer: Trainer, tokenizer, logger: str):
                         ].append(pred_step_text)
                         row_index += 1
                 if logger == "wandb":
+                    wandb = _get_wandb()
                     # type: ignore[attr-defined]
                     wandb.run.log(
                         {
@@ -785,6 +795,7 @@ class SaveAxolotlConfigtoWandBCallback(TrainerCallback):
         **kwargs,  # pylint: disable=unused-argument
     ):
         if is_main_process():
+            wandb = _get_wandb()
             try:
                 # sync config to top level in run, cannot delete file right away because wandb schedules it to be synced even w/policy = 'now', so let OS delete it later.
                 with NamedTemporaryFile(
