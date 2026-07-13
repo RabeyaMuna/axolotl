@@ -6,7 +6,6 @@ from .args import (
     filter_none_kwargs,
 )
 from .fetch import fetch_from_github
-from .load import load_model_and_tokenizer
 from .sweeps import generate_sweep_configs
 from .train import build_command, generate_config_files, launch_training
 
@@ -21,3 +20,9 @@ __all__ = [
     "launch_training",
     "fetch_from_github",
 ]
+
+
+def load_model_and_tokenizer(*args, **kwargs):
+    from .load import load_model_and_tokenizer as _load_model_and_tokenizer
+
+    return _load_model_and_tokenizer(*args, **kwargs)
