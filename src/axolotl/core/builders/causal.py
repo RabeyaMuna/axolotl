@@ -7,10 +7,7 @@ from pathlib import Path
 from typing import Type, Union
 
 import transformers
-from transformers import (
-    DataCollatorWithFlattening,
-    EarlyStoppingCallback,
-)
+from transformers import DataCollatorWithFlattening, EarlyStoppingCallback
 from trl.trainer.utils import RewardDataCollatorWithPadding
 
 from axolotl.core.builders.base import TrainerBuilderBase
