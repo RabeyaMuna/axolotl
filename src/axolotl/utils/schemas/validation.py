@@ -360,8 +360,7 @@ class TrainingValidationMixin:
         gradient_checkpointing_kwargs = data.get("gradient_checkpointing_kwargs") or {}
         if (
             data.get("unfrozen_parameters")
-            and gradient_checkpointing_kwargs.get("use_reentrant")
-            is True
+            and gradient_checkpointing_kwargs.get("use_reentrant") is True
         ):
             # https://github.com/huggingface/transformers/issues/21381
             raise ValueError(
@@ -580,8 +579,7 @@ class LoRAValidationMixin:
         gradient_checkpointing_kwargs = data.get("gradient_checkpointing_kwargs") or {}
         if (
             data.get("adapter") == "qlora"
-            and gradient_checkpointing_kwargs.get("use_reentrant")
-            is False
+            and gradient_checkpointing_kwargs.get("use_reentrant") is False
             and data.get("deepspeed", "") is not None
             and "zero3" in data.get("deepspeed", "")
         ):

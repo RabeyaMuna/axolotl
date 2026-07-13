@@ -918,9 +918,7 @@ class AxolotlConfigWCapabilities(AxolotlInputConfig):
     @classmethod
     def check_sample_packing_w_sdpa_bf16(cls, data):
         capabilities = data.get("capabilities") or {}
-        is_sm_90: bool = (
-            capabilities.get("compute_capability") == "sm_90"
-        )
+        is_sm_90: bool = capabilities.get("compute_capability") == "sm_90"
         if (
             data.get("sample_packing")
             and data.get("sdp_attention")
