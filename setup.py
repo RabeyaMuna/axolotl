@@ -26,6 +26,7 @@ def parse_requirements(extras_require_map):
                 _install_requires.append(line)
     try:
         xformers_version = [req for req in _install_requires if "xformers" in req][0]
+        torchao_version = [req for req in _install_requires if "torchao" in req][0]
         autoawq_version = [req for req in _install_requires if "autoawq" in req][0]
         if "Darwin" in platform.system():
             # skip packages not compatible with OSX
@@ -34,6 +35,7 @@ def parse_requirements(extras_require_map):
                 "triton",
                 "mamba-ssm",
                 "xformers",
+                "torchao",
                 "autoawq",
                 "liger-kernel",
             ]
@@ -67,10 +69,12 @@ def parse_requirements(extras_require_map):
             if (major, minor) >= (2, 9):
                 _install_requires.pop(_install_requires.index(xformers_version))
                 _install_requires.append("xformers==0.0.33.post1")
+                _install_requires.pop(_install_requires.index(torchao_version))
                 extras_require_map["vllm"] = ["vllm>=0.10.0"]
             elif (major, minor) >= (2, 8):
                 _install_requires.pop(_install_requires.index(xformers_version))
                 _install_requires.append("xformers==0.0.32.post2")
+                _install_requires.pop(_install_requires.index(torchao_version))
                 extras_require_map["vllm"] = ["vllm>=0.10.0"]
             elif (major, minor) >= (2, 7):
                 _install_requires.pop(_install_requires.index(xformers_version))
@@ -81,9 +85,11 @@ def parse_requirements(extras_require_map):
                 else:
                     _install_requires.append("xformers==0.0.31.post1")
                     extras_require_map["vllm"] = ["vllm>=0.10.0"]
+                _install_requires.pop(_install_requires.index(torchao_version))
             elif (major, minor) >= (2, 6):
                 _install_requires.pop(_install_requires.index(xformers_version))
                 _install_requires.append("xformers==0.0.29.post3")
+                _install_requires.pop(_install_requires.index(torchao_version))
                 # since we only support 2.6.0+cu126
                 _dependency_links.append("https://download.pytorch.org/whl/cu126")
                 extras_require_map.pop("vllm")
@@ -94,9 +100,11 @@ def parse_requirements(extras_require_map):
                 else:
                     _install_requires.append("xformers>=0.0.28.post3")
                 _install_requires.pop(_install_requires.index(autoawq_version))
+                _install_requires.pop(_install_requires.index(torchao_version))
                 extras_require_map.pop("vllm")
             elif (major, minor) >= (2, 4):
                 extras_require_map.pop("vllm")
+                _install_requires.pop(_install_requires.index(torchao_version))
                 if patch == 0:
                     _install_requires.pop(_install_requires.index(xformers_version))
                     _install_requires.append("xformers>=0.0.27")
