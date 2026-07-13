@@ -646,10 +646,10 @@ class RLValidationMixin:
     @model_validator(mode="before")
     @classmethod
     def check_grpo_liger_sequence_parallel(cls, data):
+        trl_cfg = data.get("trl") or {}
         if (
             data.get("rl") == "grpo"
-            and data.get("trl", {})
-            and data.get("trl").get("use_liger_loss")
+            and trl_cfg.get("use_liger_loss")
             and data.get("sequence_parallel_degree", 1) > 1
         ):
             raise ValueError("GRPO + SP + Liger not currently supported")
@@ -892,7 +892,7 @@ class PretrainingValidationMixin:
     def check_pretraining_split_batches_accelerate(cls, data):
         # alternatively set ACCELERATE_SPLIT_BATCHES=False
         if data.get("pretraining_dataset"):
-            accelerator_config = data.get("accelerator_config", {})
+            accelerator_config = data.get("accelerator_config") or {}
             if not accelerator_config:
                 data["accelerator_config"] = {
                     "split_batches": False,
