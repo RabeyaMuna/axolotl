@@ -1,6 +1,6 @@
 """Pydantic models for datasets-related configuration"""
 
-from typing import Literal
+from typing import Any, Literal
 
 from pydantic import BaseModel, Field, model_validator
 
@@ -192,9 +192,11 @@ class SFTDataset(BaseModel):
     @model_validator(mode="before")
     @classmethod
     # pylint: disable=duplicate-code
-    def check_chat_template_config(cls, data):
+    def check_chat_template_config(cls, data: Any) -> Any:
         if isinstance(data, BaseModel):
             data = data.model_dump()
+        if not isinstance(data, dict):
+            return data
 
         # Set chat_template to tokenizer_default if not set
         if data.get("type") == "chat_template" and not data.get("chat_template"):
