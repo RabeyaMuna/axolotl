@@ -31,10 +31,11 @@ class SpectrumArgs(BaseModel):
     @model_validator(mode="before")
     @classmethod
     def check_fsdp_use_orig_params(cls, data):
+        fsdp_config = data.get("fsdp_config") or {}
         if (
             data.get("fsdp")
-            and data.get("fsdp_config")
-            and not data["fsdp_config"].get("use_orig_params")
+            and fsdp_config
+            and not fsdp_config.get("use_orig_params")
             and data.get("plugins")
             and any("SpectrumPlugin" in plugin for plugin in data["plugins"])
         ):

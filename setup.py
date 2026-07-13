@@ -66,10 +66,12 @@ def parse_requirements(extras_require_map):
                 raise ValueError("Invalid version format")
 
             if (major, minor) >= (2, 9):
+                _install_requires.pop(_install_requires.index(torchao_version))
                 _install_requires.pop(_install_requires.index(xformers_version))
                 _install_requires.append("xformers==0.0.33.post1")
                 extras_require_map["vllm"] = ["vllm>=0.9.0"]
             elif (major, minor) >= (2, 8):
+                _install_requires.pop(_install_requires.index(torchao_version))
                 _install_requires.pop(_install_requires.index(xformers_version))
                 _install_requires.append("xformers==0.0.32.post2")
                 extras_require_map["vllm"] = ["vllm>=0.9.0"]

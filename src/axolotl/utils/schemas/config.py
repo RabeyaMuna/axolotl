@@ -917,9 +917,9 @@ class AxolotlConfigWCapabilities(AxolotlInputConfig):
     @model_validator(mode="before")
     @classmethod
     def check_sample_packing_w_sdpa_bf16(cls, data):
+        capabilities = data.get("capabilities") or {}
         is_sm_90: bool = (
-            data["capabilities"]
-            and data["capabilities"].get("compute_capability") == "sm_90"
+            capabilities.get("compute_capability") == "sm_90"
         )
         if (
             data.get("sample_packing")
@@ -1218,7 +1218,8 @@ class AxolotlConfigWCapabilities(AxolotlInputConfig):
             and data.get("dataloader_pin_memory") is None
             and data.get("dataloader_prefetch_factor") is None
         ):
-            data["dataloader_num_workers"] = data.get("capabilities").get("n_gpu", 1)
+            capabilities = data.get("capabilities") or {}
+            data["dataloader_num_workers"] = capabilities.get("n_gpu", 1)
             data["dataloader_pin_memory"] = True
             data["dataloader_prefetch_factor"] = 256
 
