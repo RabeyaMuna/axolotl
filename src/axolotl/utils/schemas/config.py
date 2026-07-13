@@ -1141,6 +1141,7 @@ class AxolotlConfigWCapabilities(AxolotlInputConfig):
                 raise ValueError(
                     "FSDP2 and QAT are not supported on torch version < 2.7.0"
                 )
+        return data
 
     @model_validator(mode="before")
     @classmethod
