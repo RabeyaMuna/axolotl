@@ -66,9 +66,11 @@ def parse_requirements(extras_require_map):
                 raise ValueError("Invalid version format")
 
             if (major, minor) >= (2, 9):
+                _install_requires.pop(_install_requires.index(torchao_version))
                 _install_requires.pop(_install_requires.index(xformers_version))
                 _install_requires.append("xformers==0.0.33.post1")
             elif (major, minor) >= (2, 8):
+                _install_requires.pop(_install_requires.index(torchao_version))
                 _install_requires.pop(_install_requires.index(xformers_version))
                 _install_requires.append("xformers==0.0.32.post2")
             elif (major, minor) >= (2, 7):
@@ -79,7 +81,7 @@ def parse_requirements(extras_require_map):
                     # vllm 0.9.x is incompatible with latest transformers
                     extras_require_map.pop("vllm")
                 else:
-                    _install_requires.append("xformers==0.0.31")
+                    _install_requires.append("xformers==0.0.31.post1")
             elif (major, minor) >= (2, 6):
                 _install_requires.pop(_install_requires.index(torchao_version))
                 _install_requires.pop(_install_requires.index(xformers_version))

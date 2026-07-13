@@ -1,18 +1,21 @@
 """Utilities for model, tokenizer, etc. loading."""
 
-from typing import Any
+from __future__ import annotations
 
-from transformers import (
-    PreTrainedModel,
-    PreTrainedTokenizer,
-    PreTrainedTokenizerFast,
-    ProcessorMixin,
-)
+from typing import TYPE_CHECKING, Any
 
 from axolotl.loaders import load_processor, load_tokenizer
 from axolotl.loaders.model import ModelLoader
 from axolotl.utils.dict import DictDefault
 from axolotl.utils.logging import get_logger
+
+if TYPE_CHECKING:
+    from transformers import (
+        PreTrainedModel,
+        PreTrainedTokenizer,
+        PreTrainedTokenizerFast,
+        ProcessorMixin,
+    )
 
 LOG = get_logger(__name__)
 

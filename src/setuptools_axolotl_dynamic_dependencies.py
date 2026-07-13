@@ -59,9 +59,11 @@ def parse_requirements():
                 raise ValueError("Invalid version format")
 
             if (major, minor) >= (2, 9):
+                _install_requires.pop(_install_requires.index(torchao_version))
                 _install_requires.pop(_install_requires.index(xformers_version))
                 _install_requires.append("xformers==0.0.33.post1")
             elif (major, minor) >= (2, 8):
+                _install_requires.pop(_install_requires.index(torchao_version))
                 _install_requires.pop(_install_requires.index(xformers_version))
                 _install_requires.append("xformers==0.0.32.post2")
             elif (major, minor) >= (2, 7):
@@ -84,6 +86,7 @@ def parse_requirements():
                     _install_requires.append("xformers==0.0.28.post3")
                 _install_requires.pop(_install_requires.index(autoawq_version))
             elif (major, minor) >= (2, 4):
+                _install_requires.pop(_install_requires.index(torchao_version))
                 if patch == 0:
                     _install_requires.pop(_install_requires.index(xformers_version))
                     _install_requires.append("xformers>=0.0.27")
