@@ -318,12 +318,10 @@ class TestHFRLTrainerBuilder:
         # Create rewards.py in a directory we can import from
         rewards_dir.mkdir()
         rewards_file = rewards_dir / "rewards.py"
-        rewards_file.write_text(
-            """import random
+        rewards_file.write_text("""import random
 def rand_reward_func(prompts, completions) -> list[float]:
     return [random.uniform(0, 1) for _ in completions]
-"""
-        )
+""")
 
     def test_grpo_training_arguments(self, grpo_cfg, model, tokenizer, tmp_path):
 
