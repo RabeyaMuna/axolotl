@@ -4,12 +4,13 @@
 bitsandbytes==0.46.0
 triton>=3.0.0
 mamba-ssm==1.2.0.post1
-xformers>=0.0.23.post1
+xformers==0.0.31.post1
 autoawq==0.2.7.post3
 liger-kernel==0.6.0
 # END section
 
 packaging==23.2
+torch>=2.8.0
 
 huggingface_hub>=0.33.0
 peft==0.16.0
