@@ -1,3 +1,10 @@
+"""
+StableMax cross-entropy loss implementation.
+
+StableMax is a numerically stable alternative to softmax that avoids extreme
+values that can lead to vanishing gradients in cross-entropy loss.
+"""
+
 import torch
 import torch.nn.functional as F
 
@@ -13,19 +20,19 @@ def stablemax_fn(x):
 
 
 def stablemax_cross_entropy(
-    input,
+    user_input,
     target,
     weight=None,
     ignore_index=-100,
-    size_average=None,
-    reduce=None,
+    size_average=None,  # pylint: disable=unused-argument
+    reduce=None,  # pylint: disable=unused-argument
     reduction="mean",
     label_smoothing=0.0,
 ):
     """
     Cross-entropy loss using StableMax instead of softmax.
     Args:
-        input: logits (batch_size, num_classes)
+        user_input: logits (batch_size, num_classes)
         target: target indices (batch_size,) or one-hot (batch_size, num_classes)
         weight: manual rescaling weight given to each class (num_classes,)
         ignore_index: specifies a target value that is ignored and does not contribute to the input gradient
@@ -36,11 +43,11 @@ def stablemax_cross_entropy(
     Returns:
         loss: scalar or tensor depending on reduction
     """
-    probs = stablemax_fn(input)
+    probs = stablemax_fn(user_input)
     log_probs = torch.log(probs + 1e-12)
 
     # Handle target format and create mask for ignore_index
-    if target.dim() == input.dim():
+    if target.dim() == user_input.dim():
         # one-hot targets
         targets_one_hot = target.float()
         # For one-hot targets, ignore_index doesn't apply directly
@@ -49,8 +56,8 @@ def stablemax_cross_entropy(
         # class indices
         valid_mask = target != ignore_index
         # Convert to one-hot
-        num_classes = input.shape[-1]
-        targets_one_hot = torch.zeros_like(input)
+        num_classes = user_input.shape[-1]
+        targets_one_hot = torch.zeros_like(user_input)
         # Only set one-hot for valid targets
         valid_targets = target[valid_mask]
         if valid_targets.numel() > 0:
@@ -58,7 +65,7 @@ def stablemax_cross_entropy(
 
     # Apply label smoothing
     if label_smoothing > 0.0:
-        num_classes = input.shape[-1]
+        num_classes = user_input.shape[-1]
         uniform_dist = torch.ones_like(targets_one_hot) / num_classes
         targets_one_hot = (
             1.0 - label_smoothing
@@ -69,7 +76,7 @@ def stablemax_cross_entropy(
 
     # Apply class weights
     if weight is not None:
-        if target.dim() == input.dim():
+        if target.dim() == user_input.dim():
             # For one-hot targets, weight each class contribution
             class_weights = (targets_one_hot * weight.unsqueeze(0)).sum(dim=-1)
         else:
@@ -92,11 +99,12 @@ def stablemax_cross_entropy(
             full_loss[valid_mask] = loss
             return full_loss
         return loss
-    elif reduction == "mean":
+    if reduction == "mean":
         return (
-            loss.mean() if loss.numel() > 0 else torch.tensor(0.0, device=input.device)
+            loss.mean()
+            if loss.numel() > 0
+            else torch.tensor(0.0, device=user_input.device)
         )
-    elif reduction == "sum":
+    if reduction == "sum":
         return loss.sum()
-    else:
-        raise ValueError(f"Invalid reduction mode: {reduction}")
+    raise ValueError(f"Invalid reduction mode: {reduction}")
