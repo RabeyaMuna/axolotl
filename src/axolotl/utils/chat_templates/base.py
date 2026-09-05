@@ -16,7 +16,8 @@ _JINJA_TEMPALTE_CHOICE = "jinja"
 _DEFAULT_TEMPLATE_CHOICE = "tokenizer_default"
 _DEFAULT_FALLBACK_CHATML_TEMPLATE_CHOICE_PREFIX = "tokenizer_default_fallback_"
 
-_CHAT_TEMPLATES: dict[str, str] = {}
+CHAT_TEMPLATES: dict[str, str] = {}
+_CHAT_TEMPLATES = CHAT_TEMPLATES  # alias for backwards compatibility
 for filename in [f for f in os.listdir("./templates") if f.endswith(".jinja")]:
     with open(f"./templates/{filename}", "r", encoding="utf-8") as f:
         _CHAT_TEMPLATES[filename[:-6]] = f.read()

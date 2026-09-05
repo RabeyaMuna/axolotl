@@ -8,11 +8,10 @@ import pytest
 from transformers import AutoTokenizer
 
 from axolotl.utils.chat_templates import (
-    _CHAT_TEMPLATES,
+    CHAT_TEMPLATES,
     extract_chat_template_args,
     get_chat_template,
 )
-
 from tests.hf_offline_utils import enable_hf_offline
 
 
@@ -31,7 +30,7 @@ class TestGetChatTemplateUtils:
 
     def test_known_chat_template(self):
         chat_template_str = get_chat_template("llama3")
-        assert chat_template_str == _CHAT_TEMPLATES["llama3"]
+        assert chat_template_str == CHAT_TEMPLATES["llama3"]
 
     def test_invalid_chat_template(self):
         with pytest.raises(ValueError) as exc:

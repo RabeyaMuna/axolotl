@@ -7,8 +7,7 @@ from datasets import Dataset
 from transformers import AutoTokenizer
 
 from axolotl.prompt_strategies.jinja_template_analyzer import JinjaTemplateAnalyzer
-from axolotl.utils.chat_templates import _CHAT_TEMPLATES
-
+from axolotl.utils.chat_templates import CHAT_TEMPLATES
 from tests.hf_offline_utils import enable_hf_offline
 
 
@@ -172,7 +171,7 @@ def fixture_gemma2_chat_template_jinja_w_system() -> str:
 def fixture_llama3_2_vision_with_hardcoded_date() -> str:
     """Hardcodes the date in the template to avoid the need for date logic in the prompt"""
 
-    template = _CHAT_TEMPLATES["llama3_2_vision"]
+    template = CHAT_TEMPLATES["llama3_2_vision"]
 
     old_date_logic = """{%- if not date_string is defined %}
     {%- if strftime_now is defined %}
