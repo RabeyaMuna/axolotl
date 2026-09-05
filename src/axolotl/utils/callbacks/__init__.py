@@ -256,7 +256,7 @@ def bench_eval_callback_factory(trainer, tokenizer):
             preds, refs = [], []
             loss_bench = 0
             for batch in tqdm(data_loader, total=len(data_loader)):
-                (loss, logits, labels) = trainer.prediction_step(
+                loss, logits, labels = trainer.prediction_step(
                     trainer.model,
                     batch,
                     prediction_loss_only=False,
@@ -634,7 +634,7 @@ def log_prediction_callback_factory(trainer: Trainer, tokenizer, logger: str):
                     else:
                         batch_pos_ids = [None] * len(batch["input_ids"])
 
-                    (_, batch_logits, _) = trainer.prediction_step(
+                    _, batch_logits, _ = trainer.prediction_step(
                         trainer.model,
                         batch,
                         prediction_loss_only=False,

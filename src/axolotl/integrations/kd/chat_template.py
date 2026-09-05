@@ -15,6 +15,7 @@
 """
 Chat template prompt strategy loader with KD support
 """
+
 import logging
 from typing import Any, Dict
 

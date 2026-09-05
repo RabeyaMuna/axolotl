@@ -77,7 +77,7 @@ class ModalCloud(Cloud):
                 if val := os.environ.get(key, ""):
                     res[key] = val
             elif isinstance(key, dict):
-                (key_, val) = list(key.items())[0]
+                key_, val = list(key.items())[0]
                 res[key_] = val
         return res
 
@@ -135,7 +135,7 @@ class ModalCloud(Cloud):
                     if val := os.environ.get(key, ""):
                         res.append(modal.Secret.from_dict({key: val}))
                 elif isinstance(key, dict):
-                    (key_, val) = list(key.items())[0]
+                    key_, val = list(key.items())[0]
                     res.append(modal.Secret.from_dict({key_: val}))
         return res
 
