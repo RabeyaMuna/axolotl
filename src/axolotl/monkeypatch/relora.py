@@ -275,6 +275,7 @@ class ReLoRAScheduler(LRScheduler):
         super().__init__(optimizer, inner_schedule.last_epoch)
 
     def get_lr(self) -> float:
+        # pylint: disable=duplicate-code
         self.inner_schedule.last_epoch = self.last_epoch
 
         original = self.inner_schedule.get_lr()

@@ -307,7 +307,6 @@ class JaggedLRRestartScheduler(LRScheduler):
         jagged_restart_anneal_steps: int = 1,
         min_lr_scale: float = 0.001,
     ) -> None:
-        # pylint: disable=duplicate-code
         self.inner_schedule = inner_schedule
         self.restarts_steps = jagged_restart_steps
         self.warmup_steps = jagged_restart_warmup_steps
@@ -316,6 +315,7 @@ class JaggedLRRestartScheduler(LRScheduler):
         super().__init__(optimizer, inner_schedule.last_epoch, inner_schedule.verbose)
 
     def get_lr(self) -> float | Sequence[float]:
+        # pylint: disable=duplicate-code
         self.inner_schedule.last_epoch = self.last_epoch
 
         original = self.inner_schedule.get_lr()
