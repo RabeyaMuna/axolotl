@@ -391,6 +391,12 @@ def process_pretraining_datasets_for_packing(
 
 
 def calculate_total_num_steps(cfg, train_dataset, update=True):
+    # Set default values for parallel degrees if None to avoid TypeError in calculations
+    if cfg.sequence_parallel_degree is None:
+        cfg.sequence_parallel_degree = 1
+    if cfg.tensor_parallel_size is None:
+        cfg.tensor_parallel_size = 1
+
     if (
         not cfg.total_num_tokens
         and not cfg.skip_prepare_dataset
