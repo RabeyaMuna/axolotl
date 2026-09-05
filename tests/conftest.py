@@ -559,3 +559,32 @@ def test_load_fixtures(
     download_llama2_model_fixture,
 ):
     pass
+
+
+# Fixture for duplicated tools data used in chat template tests
+@pytest.fixture
+def tools_multiples_function():
+    """Fixture providing the 'multiples' function tool definition used in chat template tests."""
+    return [
+        {
+            "type": "function",
+            "function": {
+                "name": "multiples",
+                "description": "Generates a list of all the multiples of a number that are less than a given limit.",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "number": {
+                            "type": "integer",
+                            "description": "The number to find multiples of.",
+                        },
+                        "limit": {
+                            "type": "integer",
+                            "description": "The upper limit for the multiples.",
+                        },
+                    },
+                    "required": ["number", "limit"],
+                },
+            },
+        },
+    ]

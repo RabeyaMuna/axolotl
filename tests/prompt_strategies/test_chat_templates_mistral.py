@@ -7,7 +7,7 @@ if TYPE_CHECKING:
     from axolotl.utils.mistral_tokenizer import HFMistralTokenizer
 
 
-def test_magistral_chat_template(magistral_tokenizer: "HFMistralTokenizer"):
+def test_magistral_chat_template(magistral_tokenizer: "HFMistralTokenizer", tools_multiples_function):
     from axolotl.prompt_strategies.chat_template import MistralPrompter, MistralStrategy
 
     # check bos, eos, pad, unk are accessible properties
@@ -158,29 +158,7 @@ def test_magistral_chat_template(magistral_tokenizer: "HFMistralTokenizer"):
     # test chat template with tools
     res = strategy.tokenize_prompt(
         {
-            "tools": [
-                {
-                    "type": "function",
-                    "function": {
-                        "name": "multiples",
-                        "description": "Generates a list of all the multiples of a number that are less than a given limit.",
-                        "parameters": {
-                            "type": "object",
-                            "properties": {
-                                "number": {
-                                    "type": "integer",
-                                    "description": "The number to find multiples of.",
-                                },
-                                "limit": {
-                                    "type": "integer",
-                                    "description": "The upper limit for the multiples.",
-                                },
-                            },
-                            "required": ["number", "limit"],
-                        },
-                    },
-                },
-            ],
+            "tools": tools_multiples_function,
             "messages": [
                 {
                     "role": "user",

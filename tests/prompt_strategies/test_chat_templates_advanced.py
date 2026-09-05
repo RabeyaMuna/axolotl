@@ -18,7 +18,6 @@ from axolotl.prompt_strategies.chat_template import (
 from axolotl.prompters import IGNORE_TOKEN_ID
 from axolotl.utils.chat_templates import get_chat_template
 from axolotl.utils.logging import get_logger
-
 from tests.hf_offline_utils import enable_hf_offline
 
 LOG = get_logger(__name__)
@@ -935,13 +934,7 @@ class TestChatTemplateConfigurations:
             "messages",
         )
 
-        if chat_template == "llama3":
-            assert variables == {"role", "content"}, (
-                f"Expected variables: {'role', 'content'} from {tokenizer}/{chat_template}\n"
-                f"Got: {variables}\n"
-                f"Chat template: {actual_jinja_template}"
-            )
-        elif chat_template == "chatml":
+        if chat_template == "llama3" or chat_template == "chatml":
             assert variables == {"role", "content"}, (
                 f"Expected variables: {'role', 'content'} from {tokenizer}/{chat_template}\n"
                 f"Got: {variables}\n"
@@ -953,13 +946,7 @@ class TestChatTemplateConfigurations:
                 f"Got: {variables}\n"
                 f"Chat template: {actual_jinja_template}"
             )
-        elif chat_template == "jinja" and tokenizer == "gemma2_tokenizer":
-            assert variables == {"role", "content"}, (
-                f"Expected variables: {'role', 'content'} from {tokenizer}/{chat_template}\n"
-                f"Got: {variables}\n"
-                f"Chat template: {actual_jinja_template}"
-            )
-        elif chat_template == "phi_35":
+        elif chat_template == "jinja" and tokenizer == "gemma2_tokenizer" or chat_template == "phi_35":
             assert variables == {"role", "content"}, (
                 f"Expected variables: {'role', 'content'} from {tokenizer}/{chat_template}\n"
                 f"Got: {variables}\n"
@@ -1290,6 +1277,7 @@ class TestChatTemplateToolCalling:
     def test_tool_calling_with_llama4_template(
         self,
         llama3_tokenizer,
+        tools_multiples_function,
     ):
         LOG.info("Testing tool calling with llama3 tokenizer and llama4 chat template")
 
@@ -1314,27 +1302,7 @@ class TestChatTemplateToolCalling:
                             },
                         },
                     },
-                    {
-                        "type": "function",
-                        "function": {
-                            "name": "multiples",
-                            "description": "Generates a list of all the multiples of a number that are less than a given limit.",
-                            "parameters": {
-                                "type": "object",
-                                "properties": {
-                                    "number": {
-                                        "type": "integer",
-                                        "description": "The number to find multiples of.",
-                                    },
-                                    "limit": {
-                                        "type": "integer",
-                                        "description": "The upper limit for the multiples.",
-                                    },
-                                },
-                                "required": ["number", "limit"],
-                            },
-                        },
-                    },
+                    *tools_multiples_function,
                 ],
                 "messages": [
                     {
