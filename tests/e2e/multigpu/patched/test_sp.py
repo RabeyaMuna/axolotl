@@ -1,15 +1,13 @@
 """E2E tests for sequence parallelism"""
 
-from pathlib import Path
-
 import pytest
-import yaml
 from accelerate.test_utils import execute_subprocess_async
 from transformers.testing_utils import get_torch_dist_unique_port
 
 from axolotl.utils.dict import DictDefault
 
 from ...utils import check_tensorboard
+from tests.utils.dataset_config import get_alpaca_dataset_config, write_config_to_yaml
 
 
 class TestSequenceParallelism:
@@ -25,6 +23,9 @@ class TestSequenceParallelism:
         threshold=2.0,
     ):
         """Helper method to run sequence parallel tests with different configurations"""
+        # Get shared dataset config
+        dataset_config = get_alpaca_dataset_config()
+
         cfg = DictDefault(
             {
                 "base_model": "HuggingFaceTB/SmolLM2-135M",
@@ -42,14 +43,6 @@ class TestSequenceParallelism:
                 "lora_target_linear": True,
                 "lora_modules_to_save": ["embed_tokens", "lm_head"],
                 "special_tokens": {"pad_token": "<|endoftext|>"},
-                "datasets": [
-                    {
-                        "path": "tatsu-lab/alpaca",
-                        "type": "alpaca",
-                        "split": "train[:10%]",
-                    },
-                ],
-                "num_epochs": 1,
                 "max_steps": 8,
                 "micro_batch_size": micro_batch_size,
                 "gradient_accumulation_steps": 2,
@@ -71,11 +64,11 @@ class TestSequenceParallelism:
                 "ring_attn_func": ring_attn_func,
             }
         )
+        # Merge dataset config
+        cfg.update(dataset_config)
 
-        # write cfg to yaml file
-        Path(temp_dir).mkdir(parents=True, exist_ok=True)
-        with open(Path(temp_dir) / "config.yaml", "w", encoding="utf-8") as fout:
-            fout.write(yaml.dump(cfg.to_dict(), Dumper=yaml.Dumper))
+        # Write config to yaml file
+        config_path = write_config_to_yaml(cfg, temp_dir)
 
         execute_subprocess_async(
             [
@@ -87,7 +80,7 @@ class TestSequenceParallelism:
                 f"{get_torch_dist_unique_port()}",
                 "-m",
                 "axolotl.cli.train",
-                str(Path(temp_dir) / "config.yaml"),
+                str(config_path),
             ]
         )
 
