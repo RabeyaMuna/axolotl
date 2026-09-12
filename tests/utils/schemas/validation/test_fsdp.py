@@ -1,10 +1,9 @@
 """
-tests for pydantic fsdp validation
+Axolotl tests for pydantic fsdp validation
 """
 
 # pylint: disable=too-many-boolean-expressions
 import pytest
-
 from axolotl.utils.config import validate_config
 from axolotl.utils.dict import DictDefault
 
@@ -114,12 +113,12 @@ class TestFSDPValidation:
 
     @pytest.mark.parametrize(
         "rl",
-        [
+        (
             "dpo",
             "kto",
             "orpo",
             "ipo",
-        ],
+        ),
     )
     def test_fsdp2_dpo(self, min_base_cfg, rl):
         cfg = min_base_cfg | DictDefault(
