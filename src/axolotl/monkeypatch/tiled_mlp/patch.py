@@ -13,13 +13,12 @@ from axolotl.utils.logging import get_logger
 
 LOG = get_logger(__name__)
 
-from .fsdp import TiledMLPFSDP
+from .fsdp import TiledMLPFSDP  # noqa: E402  # pylint: disable=C0413
 
 
 def patch_tiled_mlp_distributed(
     tiled_mlp_cls, model_type, use_original_mlp=False, cfg_num_shards=None
 ):
-
     try:
         # Dynamically import the module and MLP class
         module_path = f"transformers.models.{model_type}.modeling_{model_type}"
