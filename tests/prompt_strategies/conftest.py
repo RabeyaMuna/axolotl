@@ -3,11 +3,10 @@ shared fixtures for prompt strategies tests
 """
 
 import pytest
+from axolotl.prompt_strategies.jinja_template_analyzer import JinjaTemplateAnalyzer
+from axolotl.utils.chat_templates import CHAT_TEMPLATES as _CHAT_TEMPLATES
 from datasets import Dataset
 from transformers import AutoTokenizer
-
-from axolotl.prompt_strategies.jinja_template_analyzer import JinjaTemplateAnalyzer
-from axolotl.utils.chat_templates import _CHAT_TEMPLATES
 
 from tests.hf_offline_utils import enable_hf_offline
 
