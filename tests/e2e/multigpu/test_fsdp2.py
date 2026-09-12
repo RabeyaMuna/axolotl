@@ -7,11 +7,18 @@ from pathlib import Path
 import pytest
 import yaml
 from accelerate.test_utils import execute_subprocess_async
+from axolotl.utils.dict import DictDefault
 from transformers.testing_utils import get_torch_dist_unique_port
 
-from axolotl.utils.dict import DictDefault
-
 AXOLOTL_ROOT = Path(__file__).parent.parent.parent.parent
+
+
+try:
+    from axolotl.testing.requirements import require_torch_2_6_0
+except Exception:
+
+    def require_torch_2_6_0(obj):
+        return obj
 
 
 @require_torch_2_6_0
