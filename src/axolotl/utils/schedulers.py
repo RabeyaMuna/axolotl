@@ -336,7 +336,10 @@ class JaggedLRRestartScheduler(LRScheduler):
                 cycle_t = 1
             scale = cycle_t * (1 - self.min_lr_scale) + self.min_lr_scale
 
-        if isinstance(original, Sequence):
+        # Attempt to scale directly (works for scalars and types that support
+        # multiplication by a float). If that fails (e.g. for plain lists),
+        # fall back to element-wise scaling.
+        try:
+            return original * scale
+        except TypeError:
             return [lr * scale for lr in original]
-
-        return original * scale
