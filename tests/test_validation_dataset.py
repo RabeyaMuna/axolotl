@@ -1,10 +1,10 @@
+# pylint: disable=duplicate-code
 """Module for testing the validation module for the dataset config"""
 
 import warnings
 from typing import Optional
 
 import pytest
-
 from axolotl.utils.config import validate_config
 from axolotl.utils.dict import DictDefault
 from axolotl.utils.schemas.datasets import ChatTemplate
