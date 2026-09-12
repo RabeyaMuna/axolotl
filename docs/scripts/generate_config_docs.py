@@ -10,9 +10,8 @@ import textwrap
 from typing import Any
 
 import yaml
-from pydantic import BaseModel
-
 from axolotl.utils.schemas.config import AxolotlInputConfig
+from pydantic import BaseModel
 
 
 class QuartoGenerator:
@@ -56,43 +55,6 @@ class QuartoGenerator:
                     return ast.unparse(node.annotation)
 
         return "unknown"
-        """Format field type information in a readable way."""
-        # Handle fallback case where we only have basic info
-        if field_info.get("type") == "unknown":
-            return "unknown"
-
-        if "anyOf" in field_info:
-            types = []
-            is_optional = False
-
-            for option in field_info["anyOf"]:
-                if option.get("type") == "null":
-                    is_optional = True
-                elif option.get("type"):
-                    types.append(option["type"])
-                elif "$ref" in option:
-                    ref_name = option["$ref"].split("/")[-1]
-                    types.append(ref_name)
-
-            type_str = " | ".join(types) if types else "unknown"
-            return f"{type_str} | None" if is_optional else type_str
-
-        field_type = field_info.get("type", "unknown")
-
-        if field_type == "array":
-            items = field_info.get("items", {})
-            if items.get("type"):
-                item_type = items["type"]
-            elif "$ref" in items:
-                item_type = items["$ref"].split("/")[-1]
-            else:
-                item_type = "unknown"
-            return f"list[{item_type}]"
-
-        if field_type == "object":
-            return "dict"
-
-        return field_type
 
     def _extract_field_groups_from_source(
         self, model_class: type[BaseModel]
