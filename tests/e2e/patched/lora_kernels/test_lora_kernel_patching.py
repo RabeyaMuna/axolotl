@@ -8,12 +8,6 @@ import pytest
 import torch
 import yaml
 from accelerate.state import PartialState
-from peft import PeftModelForCausalLM, get_peft_config
-from transformers import AutoModelForCausalLM, LlamaForCausalLM
-from transformers.models.llama.configuration_llama import LlamaConfig
-from transformers.models.llama.modeling_llama import LlamaAttention
-from transformers.models.qwen3_moe.modeling_qwen3_moe import Qwen3MoeAttention
-
 from axolotl.cli.config import load_cfg
 from axolotl.kernels.lora import (
     apply_lora_mlp_geglu,
@@ -31,6 +25,11 @@ from axolotl.monkeypatch.lora_kernels import (
     patch_self_attn_lora,
 )
 from axolotl.utils.dict import DictDefault
+from peft import PeftModelForCausalLM, get_peft_config
+from transformers import AutoModelForCausalLM, LlamaForCausalLM
+from transformers.models.llama.configuration_llama import LlamaConfig
+from transformers.models.llama.modeling_llama import LlamaAttention
+from transformers.models.qwen3_moe.modeling_qwen3_moe import Qwen3MoeAttention
 
 MODEL_CONFIGS = [
     {
@@ -546,7 +545,8 @@ def test_kernel_training_integration_dropout_non_zero():
     assert attention_cls.forward == original_forward_method
 
     # Load model
-    model, _ = load_model_and_tokenizer(cfg=cfg)
+    _result = load_model_and_tokenizer(cfg=cfg)
+    model = _result[0]
 
     # Apply apply_lora_kernel_patches
     apply_lora_kernel_patches(model, cfg)
