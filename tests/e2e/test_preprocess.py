@@ -22,9 +22,9 @@ class TestPreprocess:
                 "val_set_size": 0.01,
                 "datasets": [
                     {
-                        "path": "tatsu-lab/alpaca",
+                        "path": "tatsu-lab/alpaca-e2e",
                         "type": "alpaca",
-                        "split": "train[:10%]",
+                        "split": "train[:5%]",
                     },
                 ],
                 "num_epochs": 1,
