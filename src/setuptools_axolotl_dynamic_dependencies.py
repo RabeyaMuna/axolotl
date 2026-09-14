@@ -45,7 +45,7 @@ def parse_requirements():
             try:
                 torch_version = version("torch")
             except PackageNotFoundError:
-                torch_version = "2.5.1"
+                torch_version = "2.6.0"  # default to torch 2.6
             _install_requires.append(f"torch=={torch_version}")
 
             version_match = re.match(r"^(\d+)\.(\d+)(?:\.(\d+))?", torch_version)
@@ -58,12 +58,30 @@ def parse_requirements():
             else:
                 raise ValueError("Invalid version format")
 
-            if (major, minor) >= (2, 5):
+            if (major, minor) >= (2, 9):
+                _install_requires.pop(_install_requires.index(xformers_version))
+                _install_requires.append("xformers==0.0.33")
+            elif (major, minor) >= (2, 8):
+                _install_requires.pop(_install_requires.index(xformers_version))
+                if patch == 0:
+                    _install_requires.append("xformers==0.0.32")
+                else:
+                    _install_requires.append("xformers==0.0.33")
+            elif (major, minor) >= (2, 7):
+                _install_requires.pop(_install_requires.index(xformers_version))
+                if patch == 0:
+                    _install_requires.append("xformers==0.0.30")
+                else:
+                    _install_requires.append("xformers==0.0.31")
+            elif (major, minor) >= (2, 6):
+                _install_requires.pop(_install_requires.index(xformers_version))
+                _install_requires.append("xformers==0.0.29.post3")
+            elif (major, minor) >= (2, 5):
                 _install_requires.pop(_install_requires.index(xformers_version))
                 if patch == 0:
                     _install_requires.append("xformers==0.0.28.post2")
                 else:
-                    _install_requires.append("xformers==0.0.28.post3")
+                    _install_requires.append("xformers>=0.0.28.post3")
                 _install_requires.pop(_install_requires.index(autoawq_version))
             elif (major, minor) >= (2, 4):
                 if patch == 0:
