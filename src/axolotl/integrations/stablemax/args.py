@@ -1,3 +1,5 @@
+"""StableMax arguments for Axolotl integration."""
+
 from pydantic import BaseModel, Field
 
 
