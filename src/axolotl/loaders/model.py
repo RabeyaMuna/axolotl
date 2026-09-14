@@ -411,7 +411,7 @@ class ModelLoader:
         if self.cfg.dp_shard_size and self.cfg.dp_shard_size > 1:
             pc_kwargs["dp_shard_size"] = self.cfg.dp_shard_size
             remaining_world_size = remaining_world_size // self.cfg.dp_shard_size
-            
+
         if self.cfg.dp_replicate_size and self.cfg.dp_replicate_size > 1:
             pc_kwargs["dp_replicate_size"] = self.cfg.dp_replicate_size
             remaining_world_size = remaining_world_size // self.cfg.dp_replicate_size
@@ -432,7 +432,6 @@ class ModelLoader:
             partial_state = PartialState()
             partial_state.parallelism_config = parallelism_config
             partial_state.device_mesh = device_mesh
-
 
     def _set_auto_model_loader(self):
         """Set `self.auto_model_loader`. Defaults to `transformers.AutoModelForCausalLM`
@@ -524,9 +523,9 @@ class ModelLoader:
                 )
             else:
                 if self.cfg.gptq_disable_exllama is not None:
-                    self.model_config.quantization_config["disable_exllama"] = (
-                        self.cfg.gptq_disable_exllama
-                    )
+                    self.model_config.quantization_config[
+                        "disable_exllama"
+                    ] = self.cfg.gptq_disable_exllama
                 self.model_kwargs["quantization_config"] = GPTQConfig(
                     **self.model_config.quantization_config
                 )
