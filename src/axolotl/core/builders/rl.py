@@ -89,9 +89,9 @@ class HFRLTrainerBuilder(TrainerBuilderBase):
         )
 
         if self.cfg.remove_unused_columns is not None:
-            training_args_kwargs["remove_unused_columns"] = (
-                self.cfg.remove_unused_columns
-            )
+            training_args_kwargs[
+                "remove_unused_columns"
+            ] = self.cfg.remove_unused_columns
         else:
             training_args_kwargs["remove_unused_columns"] = False
 
@@ -151,7 +151,6 @@ class HFRLTrainerBuilder(TrainerBuilderBase):
             if blocklist_key in training_args_kwargs:
                 del training_args_kwargs[blocklist_key]
 
-
         if self.cfg.plugins:
             plugin_manager = PluginManager.get_instance()
             plugin_training_args = plugin_manager.get_training_args(self.cfg)
@@ -179,9 +178,9 @@ class HFRLTrainerBuilder(TrainerBuilderBase):
         if self.cfg.adapter and self.peft_config and self.cfg.rl is not RLType.GRPO:
             trainer_kwargs["peft_config"] = self.peft_config
         if self.cfg.precompute_ref_log_probs is not None:
-            trainer_kwargs["precompute_ref_log_probs"] = (
-                self.cfg.precompute_ref_log_probs
-            )
+            trainer_kwargs[
+                "precompute_ref_log_probs"
+            ] = self.cfg.precompute_ref_log_probs
 
         trainer_cls, trainer_cls_args = self._get_trainer_cls(trainer_kwargs)
 
