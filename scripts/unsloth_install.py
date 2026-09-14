@@ -16,7 +16,7 @@ try:
     is_ampere = torch.cuda.get_device_capability()[0] >= 8
 except RuntimeError:
     is_ampere = False
-if cuda != "12.1" and cuda != "11.8" and cuda != "12.4":
+if cuda not in ("12.1", "11.8", "12.4", "12.6"):
     raise RuntimeError(f"CUDA = {cuda} not supported!")
 if v <= V("2.1.0"):
     raise RuntimeError(f"Torch = {v} too old!")
