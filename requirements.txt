@@ -32,7 +32,8 @@ addict
 fire
 PyYAML>=6.0
 requests
-wandb
+wandb>=0.28.1
+protobuf<7.34.0
 einops
 colorama
 numba

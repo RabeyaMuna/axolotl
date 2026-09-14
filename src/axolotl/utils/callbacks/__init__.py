@@ -15,7 +15,10 @@ import numpy as np
 import pandas as pd
 import torch
 import torch.distributed as dist
-import wandb
+try:
+    import wandb
+except (ImportError, AttributeError):
+    wandb = None
 from datasets import load_dataset
 from optimum.bettertransformer import BetterTransformer
 from tqdm import tqdm
