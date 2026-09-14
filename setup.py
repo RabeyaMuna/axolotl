@@ -64,7 +64,11 @@ def parse_requirements(extras_require_map):
             else:
                 raise ValueError("Invalid version format")
 
-            if (major, minor) >= (2, 7):
+            if (major, minor) >= (2, 8):
+                # No xformers version available for torch >= 2.8 yet
+                _install_requires.pop(_install_requires.index(xformers_version))
+                extras_require_map["vllm"] = ["vllm>=0.9.0"]
+            elif (major, minor) >= (2, 7):
                 _install_requires.pop(_install_requires.index(xformers_version))
                 if patch == 0:
                     _install_requires.append("xformers==0.0.30")
