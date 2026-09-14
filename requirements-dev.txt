@@ -6,3 +6,9 @@ quartodoc
 jupyter
 blobfile
 tiktoken
+
+# Add axolotl without version to prevent pip from trying to resolve
+# a conflicting version when the package is already installed in editable mode.
+# This prevents the "Cannot install axolotl and axolotl==0.12.0.dev0" error
+# by telling pip to use the already-installed version.
+axolotl
