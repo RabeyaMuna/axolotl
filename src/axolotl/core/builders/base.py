@@ -423,27 +423,25 @@ class TrainerBuilderBase(abc.ABC):
             )
             training_args_kwargs["torch_compile"] = self.cfg.torch_compile
             if self.cfg.torch_compile_backend:
-                training_args_kwargs["torch_compile_backend"] = (
-                    self.cfg.torch_compile_backend
-                )
+                training_args_kwargs[
+                    "torch_compile_backend"
+                ] = self.cfg.torch_compile_backend
             if self.cfg.torch_compile_mode:
                 training_args_kwargs["torch_compile_mode"] = self.cfg.torch_compile_mode
 
     def _configure_accelerator_config(self, training_args_kwargs: dict):
         if self.cfg.accelerator_config:
-            training_args_kwargs["accelerator_config"] = (
-                self.cfg.accelerator_config
-            )
+            training_args_kwargs["accelerator_config"] = self.cfg.accelerator_config
 
     def _configure_gradient_checkpointing(self, training_args_kwargs: dict):
         if self.cfg.gradient_checkpointing:
-            training_args_kwargs["gradient_checkpointing"] = (
-                self.cfg.gradient_checkpointing
-            )
+            training_args_kwargs[
+                "gradient_checkpointing"
+            ] = self.cfg.gradient_checkpointing
             if self.cfg.gradient_checkpointing_kwargs is not None:
-                training_args_kwargs["gradient_checkpointing_kwargs"] = (
-                    self.cfg.gradient_checkpointing_kwargs
-                )
+                training_args_kwargs[
+                    "gradient_checkpointing_kwargs"
+                ] = self.cfg.gradient_checkpointing_kwargs
             else:
                 training_args_kwargs["gradient_checkpointing_kwargs"] = {
                     "use_reentrant": False
@@ -496,9 +494,9 @@ class TrainerBuilderBase(abc.ABC):
         training_args_kwargs["per_device_train_batch_size"] = self.cfg.micro_batch_size
 
         if self.cfg.eval_batch_size:
-            training_args_kwargs["per_device_eval_batch_size"] = (
-                self.cfg.eval_batch_size
-            )
+            training_args_kwargs[
+                "per_device_eval_batch_size"
+            ] = self.cfg.eval_batch_size
 
         training_args_kwargs["max_steps"] = self.cfg.max_steps or total_num_steps or -1
         training_args_kwargs["num_train_epochs"] = self.cfg.num_epochs
