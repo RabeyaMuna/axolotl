@@ -469,9 +469,9 @@ class ModelLoader:
                 )
             else:
                 if self.cfg.gptq_disable_exllama is not None:
-                    self.model_config.quantization_config["disable_exllama"] = (
-                        self.cfg.gptq_disable_exllama
-                    )
+                    self.model_config.quantization_config[
+                        "disable_exllama"
+                    ] = self.cfg.gptq_disable_exllama
                 self.model_kwargs["quantization_config"] = GPTQConfig(
                     **self.model_config.quantization_config
                 )
@@ -615,7 +615,10 @@ class ModelLoader:
             if self.cfg.fsdp_config.cpu_ram_efficient_loading:
                 skip_move_to_device = True
                 # Don't delete device_map for QLoRA + FSDP - it was set correctly in _set_device_map
-                if "device_map" in self.model_kwargs and not self.is_qlora_and_fsdp_enabled:
+                if (
+                    "device_map" in self.model_kwargs
+                    and not self.is_qlora_and_fsdp_enabled
+                ):
                     del self.model_kwargs["device_map"]
             elif self.is_qlora_and_fsdp_enabled:
                 skip_move_to_device = True
