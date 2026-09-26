@@ -255,6 +255,7 @@ class ReLoRACallback(TrainerCallback):
         return control
 
 
+# pylint: disable=duplicate-code
 class ReLoRAScheduler(LRScheduler):
     """Wraps another scheduler to apply per-lora-restart learning rate warmups."""
 
