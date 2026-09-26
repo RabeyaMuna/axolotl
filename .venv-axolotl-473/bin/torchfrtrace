@@ -1,0 +1,8 @@
+#!/bin/sh
+'''exec' /home/yisenxu/rabeya/mini-swe-agent-ci-based/results/think_repair_deepseek/926f6108861434b74b89f4836c9ee0f3bd0ebe78/testbed/.venv-axolotl-473/bin/python3 "$0" "$@"
+' '''
+import sys
+from tools.flight_recorder.fr_trace import main
+if __name__ == '__main__':
+    sys.argv[0] = sys.argv[0].removesuffix('.exe')
+    sys.exit(main())
