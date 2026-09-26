@@ -429,6 +429,12 @@ def calculate_total_num_steps(cfg, train_dataset, update=True):
         # flash attention with position ids fails
 
         if cfg.sample_packing_eff_est:
+            if cfg.total_num_tokens is None:
+                raise ValueError(
+                    "total_num_tokens must be set when sample_packing_eff_est is specified. "
+
+                    "Either set total_num_tokens in your config or disable skip_prepare_dataset."
+                )
             total_num_steps = (
                 # match count to len est in dataloader
                 int(
@@ -441,9 +447,9 @@ def calculate_total_num_steps(cfg, train_dataset, update=True):
                     )
                     - 1
                 )
-                * cfg.num_epochs
-                * cfg.sequence_parallel_degree
-                * cfg.tensor_parallel_size
+                * (cfg.num_epochs or 1)
+                * (cfg.sequence_parallel_degree or 1)
+                * (cfg.tensor_parallel_size or 1)
             )
             LOG.debug(
                 f"total_num_tokens: {cfg.total_num_tokens:_}, total_num_steps: {total_num_steps:_}"
@@ -476,16 +482,16 @@ def calculate_total_num_steps(cfg, train_dataset, update=True):
                 train_dataset.remove_columns(["length"]),
                 batch_sampler=sampler,
             )
-            data_loader_len = len(data_loader) * cfg.micro_batch_size // cfg.batch_size
+            data_loader_len = len(data_loader) * cfg.micro_batch_size // (cfg.batch_size or 1)
             LOG.debug(f"data_loader_len: {data_loader_len}")
             # FIXME: is there a bug here somewhere? the total num steps depends
             # on the agreed on value for sample_packing_eff_est
             total_num_steps = int(
                 math.floor(
                     data_loader_len
-                    * cfg.num_epochs
-                    * cfg.sequence_parallel_degree
-                    * cfg.tensor_parallel_size
+                    * (cfg.num_epochs or 1)
+                    * (cfg.sequence_parallel_degree or 1)
+                    * (cfg.tensor_parallel_size or 1)
                 )
             )
             if cfg.dataloader_drop_last:
@@ -510,10 +516,10 @@ def calculate_total_num_steps(cfg, train_dataset, update=True):
         total_num_steps = int(
             math.ceil(
                 len(train_dataset)
-                * cfg.num_epochs
-                * cfg.sequence_parallel_degree
-                * cfg.tensor_parallel_size
-                / cfg.batch_size
+                * (cfg.num_epochs or 1)
+                * (cfg.sequence_parallel_degree or 1)
+                * (cfg.tensor_parallel_size or 1)
+                / (cfg.batch_size or 1)
             )
         )
     LOG.debug(f"total_num_steps: {total_num_steps}")
