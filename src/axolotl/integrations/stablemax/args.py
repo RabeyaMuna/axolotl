@@ -1,3 +1,5 @@
+"""Argument parsing for StableMax integration."""
+
 from pydantic import BaseModel, Field
 
 

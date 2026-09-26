@@ -194,3 +194,8 @@ out/
 # macOS resource fork files
 ._*
 .DS_Store
+# Shell redirection artifacts
+=[0-9]*
+>[0-9]*
+*.tmp
+*.log
