@@ -64,6 +64,10 @@ class AxolotlTrainingMixins:
             "help": "The number of samples to group together for packing. Increase for better packing."
         },
     )
+    dataset_num_proc: Optional[int] = field(
+        default=None,
+        metadata={"help": "Number of processes to use for dataset processing."},
+    )
     max_seq_length: int = field(
         default=2048,
         metadata={"help": "The maximum sequence length the model can handle"},
