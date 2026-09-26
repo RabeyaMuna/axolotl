@@ -56,6 +56,8 @@ class QuartoGenerator:
                     return ast.unparse(node.annotation)
 
         return "unknown"
+
+    def _format_field_type(self, field_info: dict) -> str:
         """Format field type information in a readable way."""
         # Handle fallback case where we only have basic info
         if field_info.get("type") == "unknown":
@@ -96,8 +98,9 @@ class QuartoGenerator:
 
     def _extract_field_groups_from_source(
         self, model_class: type[BaseModel]
-    ) -> list[dict]:
+    ) -> list[dict[str, Any]]:
         """Extract field groups from source code based on blank lines and comments."""
+        # pylint: disable=too-many-nested-blocks
         try:
             source = inspect.getsource(model_class)
             tree = ast.parse(source)
@@ -110,8 +113,8 @@ class QuartoGenerator:
                 }
             ]
 
-        groups = []
-        current_group_fields = []
+        groups: list[dict[str, Any]] = []
+        current_group_fields: list[str] = []
         current_group_title = None
         current_group_comment = None
 
@@ -134,7 +137,7 @@ class QuartoGenerator:
         source_lines = source.split("\n")
 
         # Find assignments that correspond to model fields
-        field_assignments = []
+        field_assignments: list[dict[str, Any]] = []
         for node in class_node.body:
             if isinstance(node, ast.AnnAssign) and isinstance(node.target, ast.Name):
                 field_name = node.target.id
@@ -290,7 +293,7 @@ class QuartoGenerator:
             schema = model_class.model_json_schema()
             properties = schema.get("properties", {})
             required = schema.get("required", [])
-        except Exception as e:
+        except Exception as e:  # pylint: disable=broad-exception-caught
             print(
                 f"Warning: Could not generate JSON schema ({e}). Using model fields instead."
             )
@@ -300,11 +303,12 @@ class QuartoGenerator:
             for field_name, field_info in model_class.model_fields.items():
                 # Extract description from json_schema_extra or field info
                 description = ""
-                if (
-                    hasattr(field_info, "json_schema_extra")
-                    and field_info.json_schema_extra
+                if hasattr(field_info, "json_schema_extra") and isinstance(
+                    field_info.json_schema_extra, dict
                 ):
-                    description = field_info.json_schema_extra.get("description", "")
+                    description = str(
+                        field_info.json_schema_extra.get("description", "")
+                    )
                 elif hasattr(field_info, "description") and field_info.description:
                     description = field_info.description
 
