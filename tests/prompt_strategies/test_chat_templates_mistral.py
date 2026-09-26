@@ -1,4 +1,5 @@
 """Test chat templates for mistral-common wrapper tokenizer"""
+# pylint: disable=duplicate-code
 
 import unittest
 from typing import TYPE_CHECKING
