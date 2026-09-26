@@ -66,12 +66,17 @@ def parse_requirements(extras_require_map):
 
             if (major, minor) >= (2, 7):
                 _install_requires.pop(_install_requires.index(xformers_version))
-                if patch == 0:
+                if (major, minor) == (2, 7) and patch == 0:
                     _install_requires.append("xformers==0.0.30")
                     # vllm 0.9.x is incompatible with latest transformers
                     extras_require_map.pop("vllm")
-                else:
+                elif (major, minor) == (2, 7) and patch != 0:
                     _install_requires.append("xformers==0.0.31")
+                elif (major, minor) >= (2, 9):
+                    _install_requires.append("xformers==0.0.33")
+                else:
+                    # torch 2.8.x - no compatible xformers version, skip it
+                    pass
             elif (major, minor) >= (2, 6):
                 _install_requires.pop(_install_requires.index(xformers_version))
                 _install_requires.append("xformers==0.0.29.post3")
