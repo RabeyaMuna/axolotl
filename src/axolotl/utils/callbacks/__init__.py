@@ -15,7 +15,6 @@ import numpy as np
 import pandas as pd
 import torch
 import torch.distributed as dist
-import wandb
 from datasets import load_dataset
 from optimum.bettertransformer import BetterTransformer
 from tqdm import tqdm
@@ -44,6 +43,19 @@ from axolotl.utils.distributed import (
 )
 from axolotl.utils.logging import get_logger
 from axolotl.utils.schemas.config import AxolotlInputConfig
+
+
+def _get_wandb():
+    """Lazy import for wandb to avoid breaking when wandb is unavailable."""
+    try:
+        import wandb  # pylint: disable=import-outside-toplevel
+        return wandb
+    except ImportError as e:
+        raise ImportError(
+            "wandb is required for this feature. Install it with: pip install wandb"
+        ) from e
+
+
 
 if TYPE_CHECKING:
     from axolotl.core.training_args import AxolotlTrainingArguments
@@ -735,7 +747,7 @@ def log_prediction_callback_factory(trainer: Trainer, tokenizer, logger: str):
                         row_index += 1
                 if logger == "wandb":
                     # type: ignore[attr-defined]
-                    wandb.run.log(
+                    _get_wandb().run.log(
                         {
                             f"{name} - Predictions vs Ground Truth": pd.DataFrame(
                                 table_data
@@ -791,12 +803,12 @@ class SaveAxolotlConfigtoWandBCallback(TrainerCallback):
                     mode="w", delete=False, suffix=".yml", prefix="axolotl_config_"
                 ) as temp_file:
                     copyfile(self.axolotl_config_path, temp_file.name)
-                    artifact = wandb.Artifact(
-                        f"config-{wandb.run.id}", type="axolotl-config"
+                    artifact = _get_wandb().Artifact(
+                        f"config-{_get_wandb().run.id}", type="axolotl-config"
                     )
                     artifact.add_file(temp_file.name)
-                    wandb.log_artifact(artifact)
-                    wandb.save(temp_file.name)
+                    _get_wandb().log_artifact(artifact)
+                    _get_wandb().save(temp_file.name)
                     LOG.info(
                         "The Axolotl config has been saved to the WandB run under files."
                     )
@@ -822,13 +834,13 @@ class SaveAxolotlConfigtoWandBCallback(TrainerCallback):
                         else:
                             skip_upload = True
                         if not skip_upload:
-                            artifact = wandb.Artifact(
-                                f"deepspeed-config-{wandb.run.id}",
+                            artifact = _get_wandb().Artifact(
+                                f"deepspeed-config-{_get_wandb().run.id}",
                                 type="deepspeed-config",
                             )
                             artifact.add_file(temp_file.name)
-                            wandb.log_artifact(artifact)
-                            wandb.save(temp_file.name)
+                            _get_wandb().log_artifact(artifact)
+                            _get_wandb().save(temp_file.name)
                             LOG.info(
                                 "The DeepSpeed config has been saved to the WandB run under files."
                             )
