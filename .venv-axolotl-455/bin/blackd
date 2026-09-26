@@ -1,0 +1,10 @@
+#!/bin/sh
+'''exec' /home/yisenxu/rabeya/mini-swe-agent-ci-based/results/think_repair_deepseek/46e4e85039f556a4ddb395d794a161e99045f6ec/testbed/.venv-axolotl-455/bin/python3 "$0" "$@"
+' '''
+# -*- coding: utf-8 -*-
+import re
+import sys
+from blackd import patched_main
+if __name__ == '__main__':
+    sys.argv[0] = re.sub(r'(-script\.pyw|\.exe)?$', '', sys.argv[0])
+    sys.exit(patched_main())
