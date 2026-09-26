@@ -2,7 +2,11 @@
 model patcher for chunked top-k kl-div
 """
 
-from typing import Optional, Union, Unpack
+from typing import (  # type: ignore[attr-defined]  # pylint: disable=no-name-in-module
+    Optional,
+    Union,
+    Unpack,
+)
 
 import torch
 from transformers import Cache
