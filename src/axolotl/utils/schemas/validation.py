@@ -3,21 +3,18 @@
 # pylint: disable=too-many-boolean-expressions
 
 import json
-import logging
 import tempfile
 from pathlib import Path
 
-from pydantic import (
-    field_validator,
-    model_validator,
-)
+from pydantic import field_validator, model_validator
 from transformers.utils.import_utils import is_torch_npu_available
 
+from axolotl.utils.logging import get_logger
 from axolotl.utils.schemas.enums import ChatTemplate, RingAttnFunc, RLType
 
 # pylint: disable=too-many-lines
 
-LOG = logging.getLogger(__name__)
+LOG = get_logger(__name__)
 
 SUPPORTED_METRICS = {"sacrebleu", "comet", "ter", "chrf", "perplexity"}
 
