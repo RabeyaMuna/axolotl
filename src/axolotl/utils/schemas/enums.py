@@ -5,27 +5,18 @@ from enum import Enum
 import torch
 from packaging import version
 
-torch_version = str(torch.__version__).split("+", maxsplit=1)[0]
-if version.parse(torch_version) < version.parse("2.6.0"):
-    # no-op - config validation should handle erroring out. this guards a `torch.int4` import being
-    # unavailable in torch < 2.6
-    class TorchIntDType(Enum):
-        """Dummy class for import guarding"""
+class TorchIntDType(Enum):
+    """Torch integer data types"""
 
-else:
-
-    class TorchIntDType(Enum):
-        """Torch integer data types"""
-
-        uint1 = torch.uint1  # pylint: disable=invalid-name
-        uint2 = torch.uint2  # pylint: disable=invalid-name
-        uint3 = torch.uint3  # pylint: disable=invalid-name
-        uint4 = torch.uint4  # pylint: disable=invalid-name
-        uint5 = torch.uint5  # pylint: disable=invalid-name
-        uint6 = torch.uint6  # pylint: disable=invalid-name
-        uint7 = torch.uint7  # pylint: disable=invalid-name
-        int4 = torch.int4  # pylint: disable=invalid-name
-        int8 = torch.int8  # pylint: disable=invalid-name
+    uint1 = getattr(torch, "uint1", "uint1")  # pylint: disable=invalid-name
+    uint2 = getattr(torch, "uint2", "uint2")  # pylint: disable=invalid-name
+    uint3 = getattr(torch, "uint3", "uint3")  # pylint: disable=invalid-name
+    uint4 = getattr(torch, "uint4", "uint4")  # pylint: disable=invalid-name
+    uint5 = getattr(torch, "uint5", "uint5")  # pylint: disable=invalid-name
+    uint6 = getattr(torch, "uint6", "uint6")  # pylint: disable=invalid-name
+    uint7 = getattr(torch, "uint7", "uint7")  # pylint: disable=invalid-name
+    int4 = getattr(torch, "int4", "int4")  # pylint: disable=invalid-name
+    int8 = getattr(torch, "int8", "int8")  # pylint: disable=invalid-name
 
 
 class RLType(str, Enum):
