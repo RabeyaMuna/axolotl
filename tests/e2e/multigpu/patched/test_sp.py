@@ -42,6 +42,7 @@ class TestSequenceParallelism:
                 "lora_target_linear": True,
                 "lora_modules_to_save": ["embed_tokens", "lm_head"],
                 "special_tokens": {"pad_token": "<|endoftext|>"},
+                # Keep dataset setup inline to avoid pylint duplicate-code warnings.
                 "datasets": [
                     {
                         "path": "tatsu-lab/alpaca",

@@ -20,6 +20,7 @@ class TestPreprocess:
                 "base_model": "Qwen/Qwen2.5-0.5B",
                 "sequence_len": 2048,
                 "val_set_size": 0.01,
+                # Keep dataset setup inline to avoid pylint duplicate-code warnings.
                 "datasets": [
                     {
                         "path": "tatsu-lab/alpaca",
