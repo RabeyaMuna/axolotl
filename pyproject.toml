@@ -19,6 +19,8 @@ Documentation = "https://docs.axolotl.ai/"
 Repository = "https://github.com/axolotl-ai-cloud/axolotl.git"
 
 [tool.setuptools_scm]
+version_scheme = "no-guess-dev"
+local_scheme = "no-local-version"
 
 [tool.setuptools]
 py-modules = ["setuptools_axolotl_dynamic_dependencies"]
