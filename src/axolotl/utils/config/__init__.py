@@ -265,6 +265,9 @@ def validate_config(
     AxolotlConfigWCapabilities = AxolotlConfigWCapabilitiesBase
     AxolotlInputConfig = AxolotlInputConfigBase
 
+    if cfg is None:
+        raise ValueError("cfg must not be None")
+
     if cfg.plugins:
         (
             AxolotlConfigWCapabilities,  # pylint: disable=invalid-name
