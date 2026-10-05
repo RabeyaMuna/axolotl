@@ -300,9 +300,7 @@ def _load_or_create_dataset_split(
     )
 
     # Try loading from hub if push_dataset_to_hub is configured
-    dataset = None
-    if cfg.push_dataset_to_hub:
-        dataset = _try_load_from_hub(cfg, dataset_hash, split)
+    dataset = _try_load_from_hub(cfg, dataset_hash, split) if cfg.push_dataset_to_hub else None
 
     # Attempt to load preprocessed dataset
     if dataset is None:

@@ -1,4 +1,4 @@
-"""Module for testing the validation module for the dataset config"""
+"""Tests for dataset validation."""
 
 import warnings
 from typing import Optional
