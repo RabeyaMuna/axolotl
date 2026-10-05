@@ -24,9 +24,7 @@ from pathlib import Path
 from typing import Any
 
 import torch
-from transformers import (
-    TrainerCallback,
-)
+from transformers import TrainerCallback
 from transformers.training_args import OptimizerNames
 
 from axolotl.integrations.base import PluginManager
