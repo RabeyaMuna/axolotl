@@ -155,7 +155,6 @@ def get_state_dict(self, model, unwrap=True):
 def _process_lora_module_for_fsdp(module, fsdp2_kwargs):
     """Helper function to process LoRA modules for FSDP2."""
     from torch.distributed.fsdp import fully_shard
-    from torch.distributed.tensor import DTensor, distribute_module
 
     log_bias_dtype_mismatch = False
 
