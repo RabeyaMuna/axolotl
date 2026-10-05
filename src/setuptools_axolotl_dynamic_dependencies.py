@@ -41,12 +41,11 @@ def parse_requirements():
             _install_requires.pop(_install_requires.index(xformers_version))
         else:
             # detect the version of torch already installed
-            # and set it so dependencies don't clobber the torch version
+            # and keep the dependency compatible without hard pinning the exact patch version
             try:
                 torch_version = version("torch")
             except PackageNotFoundError:
                 torch_version = "2.5.1"
-            _install_requires.append(f"torch=={torch_version}")
 
             version_match = re.match(r"^(\d+)\.(\d+)(?:\.(\d+))?", torch_version)
             if version_match:
@@ -57,6 +56,8 @@ def parse_requirements():
                 )  # Default patch to 0 if not present
             else:
                 raise ValueError("Invalid version format")
+
+            _install_requires.append(f"torch>={major}.{minor},<{major + 1}.0")
 
             if (major, minor) >= (2, 5):
                 _install_requires.pop(_install_requires.index(xformers_version))

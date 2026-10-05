@@ -18,9 +18,9 @@ Homepage = "https://axolotl.ai/"
 Documentation = "https://docs.axolotl.ai/"
 Repository = "https://github.com/axolotl-ai-cloud/axolotl.git"
 
-[tool.setuptools_scm]
-
 [tool.setuptools]
+package-dir = {"" = "src"}
+packages = {find = {where = ["src"]}}
 py-modules = ["setuptools_axolotl_dynamic_dependencies"]
 include-package-data = true
 
