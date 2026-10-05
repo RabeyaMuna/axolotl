@@ -95,29 +95,21 @@ class DatasetValidationMixin:
     def check_eval_packing(cls, data):
         # TODO also should check test_datasets and val_set_size as we can skip
         # if there are no eval datasets/splits
-        if (
-            data.get("sample_packing")
-            and data.get("eval_table_size")
-            and data.get("eval_sample_packing") is not False
-        ):
+        eval_table_size = data.get("eval_table_size")
+        eval_sample_packing = data.get("eval_sample_packing")
+        sample_packing = data.get("sample_packing")
+
+        if sample_packing and eval_table_size and eval_sample_packing is not False:
             raise ValueError(
                 "eval_table_size and eval_sample_packing are not supported together with sample_packing. Please set 'eval_sample_packing' to false."
             )
-        if (
-            data.get("sample_packing")
-            and data.get("eval_sample_packing") is None
-            and not data.get("eval_table_size")
-        ):
+        if sample_packing and eval_sample_packing is None and not eval_table_size:
             LOG.info(
                 "explicitly setting `eval_sample_packing` to match `sample_packing`"
             )
             data["eval_sample_packing"] = True
 
-        if (
-            data.get("sample_packing")
-            and data.get("eval_sample_packing") is False
-            and data.get("remove_unused_columns") is None
-        ):
+        if sample_packing and eval_sample_packing is False and data.get("remove_unused_columns") is None:
             LOG.info(
                 "setting `remove_unused_columns: false` for when sample_packing and eval_sample_packing don't match"
             )
