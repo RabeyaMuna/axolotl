@@ -192,10 +192,7 @@ class ModelLoader:
     def _apply_post_model_load_setup(self):
         """Configure the model after it has been loaded."""
         # Handle PeftModel if needed
-        if (
-            isinstance(self.model, (peft.PeftModel, peft.PeftModelForCausalLM))
-            and not self.is_qlora_and_fsdp_enabled
-        ):
+        if isinstance(self.model, (peft.PeftModel, peft.PeftModelForCausalLM)) and not self.is_qlora_and_fsdp_enabled:
             self.model = self.model.merge_and_unload()
 
         self._resize_token_embeddings()
@@ -475,12 +472,13 @@ class ModelLoader:
                 self.model_kwargs["quantization_config"] = GPTQConfig(
                     **self.model_config.quantization_config
                 )
-        if (
-            self.cfg.adapter in ["qlora", "lora"]
-            and hasattr(self.model_config, "quantization_config")
-            and self.model_config.quantization_config["quant_method"]
-            in ["gptq", "awq", "bitsandbytes"]
-        ):
+        if self.cfg.adapter in ["qlora", "lora"] and hasattr(
+            self.model_config, "quantization_config"
+        ) and self.model_config.quantization_config["quant_method"] in [
+            "gptq",
+            "awq",
+            "bitsandbytes",
+        ]:
             if self.model_config.quantization_config["quant_method"] == "gptq":
                 self.model_kwargs["quantization_config"] = GPTQConfig(
                     **self.model_config.quantization_config
@@ -620,14 +618,7 @@ class ModelLoader:
             elif self.is_qlora_and_fsdp_enabled:
                 skip_move_to_device = True
 
-        if (
-            self.is_qlora_and_fsdp_enabled
-            and self.cfg.fsdp_config.cpu_ram_efficient_loading
-            and (
-                self.cfg.model_config_type == "dbrx"
-                or self.cfg.qlora_sharded_model_loading
-            )
-        ):
+        if self.is_qlora_and_fsdp_enabled and self.cfg.fsdp_config.cpu_ram_efficient_loading and (self.cfg.model_config_type == "dbrx" or self.cfg.qlora_sharded_model_loading):
             quant_storage = self.cfg.torch_dtype
             quantization_config = getattr(
                 self.model_config, "quantization_config", None
