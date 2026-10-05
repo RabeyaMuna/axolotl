@@ -5,9 +5,9 @@ import os
 from pathlib import Path
 from typing import Union
 
-import fire
 from accelerate import Accelerator
 from dotenv import load_dotenv
+import fire
 from transformers.hf_argparser import HfArgumentParser
 
 from axolotl.cli.args import TrainerCliArgs
