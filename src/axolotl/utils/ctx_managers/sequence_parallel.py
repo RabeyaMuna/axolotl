@@ -176,7 +176,7 @@ class SequenceParallelContextManager:
         models: list[nn.Module],
         sequence_parallel_degree: int,
         gradient_accumulation_steps: int,
-        ring_attn_func: RingAttnFunc,
+        ring_attn_func: "RingAttnFunc",
     ):
         self.models = models
         self.sequence_parallel_degree = sequence_parallel_degree
