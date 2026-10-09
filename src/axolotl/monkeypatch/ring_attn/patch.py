@@ -9,7 +9,6 @@ sequence parallelism training.
 """
 
 import inspect
-import re
 
 import accelerate
 import torch
