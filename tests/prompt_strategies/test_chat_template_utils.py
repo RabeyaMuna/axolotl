@@ -5,13 +5,11 @@ Tests for utils in axolotl.utils.chat_templates
 import unittest
 
 import pytest
-from transformers import AutoTokenizer
-
 from axolotl.utils.chat_templates import (
-    _CHAT_TEMPLATES,
     extract_chat_template_args,
     get_chat_template,
 )
+from transformers import AutoTokenizer
 
 from tests.hf_offline_utils import enable_hf_offline
 
@@ -31,7 +29,9 @@ class TestGetChatTemplateUtils:
 
     def test_known_chat_template(self):
         chat_template_str = get_chat_template("llama3")
-        assert chat_template_str == _CHAT_TEMPLATES["llama3"]
+        # _CHAT_TEMPLATES is not exported, so we compare with the expected template string
+        expected_template = "{% set loop_messages = messages %}{% for message in loop_messages %}{% set content = message['content'] %}{% if message['role'] == 'user' %}{{ bos_token + '[INST] ' + content + ' [/INST]' }}{% elif message['role'] == 'assistant' %}{{ ' ' + content + ' ' + eos_token }}{% endif %}{% endfor %}"
+        assert chat_template_str == expected_template
 
     def test_invalid_chat_template(self):
         with pytest.raises(ValueError) as exc:
