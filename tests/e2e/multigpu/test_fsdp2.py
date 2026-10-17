@@ -7,14 +7,13 @@ from pathlib import Path
 import pytest
 import yaml
 from accelerate.test_utils import execute_subprocess_async
-from transformers.testing_utils import get_torch_dist_unique_port
-
 from axolotl.utils.dict import DictDefault
+from transformers.testing_utils import get_torch_dist_unique_port
 
 AXOLOTL_ROOT = Path(__file__).parent.parent.parent.parent
 
 
-@require_torch_2_6_0
+@pytest.mark.skipif(torch.__version__ < "2.6.0", reason="requires torch>=2.6.0")
 class TestFSDP2:
     """Test class for FSDP2 functionality."""
 
