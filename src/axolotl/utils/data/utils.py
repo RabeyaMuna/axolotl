@@ -3,8 +3,8 @@
 import functools
 import hashlib
 import time
-from typing import Optional
 from enum import Enum
+from typing import Optional
 
 import huggingface_hub
 import numpy as np
@@ -119,23 +119,37 @@ def deduplicate_and_log_datasets(
     """
     # Handle cases where datasets are None
     if train_dataset is not None:
-        LOG.info(f"Starting deduplication for train dataset. Original size: {len(train_dataset)}")
+        LOG.info(
+            f"Starting deduplication for train dataset. Original size: {len(train_dataset)}"
+        )
         train_dataset = deduplicate_dataset(dataset=train_dataset, num_proc=num_proc)
-        LOG.info(f"Deduplication complete for train dataset. New size: {len(train_dataset)}")
+        LOG.info(
+            f"Deduplication complete for train dataset. New size: {len(train_dataset)}"
+        )
     else:
         LOG.info("Train dataset is None. Skipping deduplication.")
 
     if eval_dataset is not None:
-        LOG.info(f"Starting deduplication for eval dataset. Original size: {len(eval_dataset)}")
-        eval_dataset = deduplicate_dataset(dataset=eval_dataset, other_dataset=train_dataset, num_proc=num_proc)
-        LOG.info(f"Deduplication complete for eval dataset. New size: {len(eval_dataset)}")
+        LOG.info(
+            f"Starting deduplication for eval dataset. Original size: {len(eval_dataset)}"
+        )
+        eval_dataset = deduplicate_dataset(
+            dataset=eval_dataset, other_dataset=train_dataset, num_proc=num_proc
+        )
+        LOG.info(
+            f"Deduplication complete for eval dataset. New size: {len(eval_dataset)}"
+        )
     else:
         LOG.info("Eval dataset is None. Skipping deduplication.")
 
     if dataset is not None and (eval_dataset is None and train_dataset is None):
-        LOG.info(f"Starting deduplication for combined dataset. Original size: {len(dataset)}")
+        LOG.info(
+            f"Starting deduplication for combined dataset. Original size: {len(dataset)}"
+        )
         dataset = deduplicate_dataset(dataset=dataset, num_proc=num_proc)
-        LOG.info(f"Deduplication complete for combined dataset. New size: {len(dataset)}")
+        LOG.info(
+            f"Deduplication complete for combined dataset. New size: {len(dataset)}"
+        )
 
     return train_dataset, eval_dataset, dataset
 
