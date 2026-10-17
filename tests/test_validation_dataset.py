@@ -4,7 +4,6 @@ import warnings
 from typing import Optional
 
 import pytest
-
 from axolotl.utils.config import validate_config
 from axolotl.utils.dict import DictDefault
 from axolotl.utils.schemas.datasets import ChatTemplate
@@ -24,7 +23,6 @@ def fixture_cfg():
     )
 
 
-# pylint: disable=too-many-public-methods (duplicate-code)
 class BaseValidation:
     """
     Base validation module to setup the log capture
@@ -56,28 +54,25 @@ class TestValidationCheckDatasetConfig(BaseValidation):
             }
         )
 
-        checked_cfg = validate_config(cfg)
-
-        def _check_config():
+        def _check_config(checked_cfg):
             assert checked_cfg.datasets[0].path == cfg.datasets[0].path
             assert checked_cfg.datasets[0].type == cfg.datasets[0].type
             assert checked_cfg.datasets[0].shards == cfg.datasets[0].shards
 
-        _check_config()
-
-        checked_cfg = validate_config(
-            cfg,
-            capabilities={
-                "bf16": "false",
-                "n_gpu": 1,
-                "compute_capability": "8.0",
-            },
-            env_capabilities={
-                "torch_version": "2.6.0",
-            },
+        _check_config(validate_config(cfg))
+        _check_config(
+            validate_config(
+                cfg,
+                capabilities={
+                    "bf16": "false",
+                    "n_gpu": 1,
+                    "compute_capability": "8.0",
+                },
+                env_capabilities={
+                    "torch_version": "2.6.0",
+                },
+            )
         )
-
-        _check_config()
 
     def test_dataset_default_chat_template_no_drop_param(self, minimal_cfg):
         cfg = DictDefault(
@@ -96,9 +91,7 @@ class TestValidationCheckDatasetConfig(BaseValidation):
             }
         )
 
-        checked_cfg = validate_config(cfg)
-
-        def _check_config():
+        def _check_config(checked_cfg):
             assert checked_cfg.datasets[0].path == cfg.datasets[0].path
             assert checked_cfg.datasets[0].type == cfg.datasets[0].type
             assert checked_cfg.chat_template is None
@@ -118,21 +111,20 @@ class TestValidationCheckDatasetConfig(BaseValidation):
                 == cfg.datasets[0].message_field_content
             )
 
-        _check_config()
-
-        checked_cfg = validate_config(
-            cfg,
-            capabilities={
-                "bf16": "false",
-                "n_gpu": 1,
-                "compute_capability": "8.0",
-            },
-            env_capabilities={
-                "torch_version": "2.6.0",
-            },
+        _check_config(validate_config(cfg))
+        _check_config(
+            validate_config(
+                cfg,
+                capabilities={
+                    "bf16": "false",
+                    "n_gpu": 1,
+                    "compute_capability": "8.0",
+                },
+                env_capabilities={
+                    "torch_version": "2.6.0",
+                },
+            )
         )
-
-        _check_config()
 
     def test_dataset_partial_default_chat_template_no_drop_param(self, minimal_cfg):
         cfg = DictDefault(
@@ -152,9 +144,7 @@ class TestValidationCheckDatasetConfig(BaseValidation):
             }
         )
 
-        checked_cfg = validate_config(cfg)
-
-        def _check_config():
+        def _check_config(checked_cfg):
             assert checked_cfg.datasets[0].path == cfg.datasets[0].path
             assert checked_cfg.datasets[0].type == cfg.datasets[0].type
             assert checked_cfg.chat_template == ChatTemplate.chatml
@@ -174,21 +164,20 @@ class TestValidationCheckDatasetConfig(BaseValidation):
                 == cfg.datasets[0].message_field_content
             )
 
-        _check_config()
-
-        checked_cfg = validate_config(
-            cfg,
-            capabilities={
-                "bf16": "false",
-                "n_gpu": 1,
-                "compute_capability": "8.0",
-            },
-            env_capabilities={
-                "torch_version": "2.6.0",
-            },
+        _check_config(validate_config(cfg))
+        _check_config(
+            validate_config(
+                cfg,
+                capabilities={
+                    "bf16": "false",
+                    "n_gpu": 1,
+                    "compute_capability": "8.0",
+                },
+                env_capabilities={
+                    "torch_version": "2.6.0",
+                },
+            )
         )
-
-        _check_config()
 
     def test_dataset_chatml_chat_template_no_drop_param(self, minimal_cfg):
         cfg = DictDefault(
@@ -209,9 +198,7 @@ class TestValidationCheckDatasetConfig(BaseValidation):
             }
         )
 
-        checked_cfg = validate_config(cfg)
-
-        def _check_config():
+        def _check_config(checked_cfg):
             assert checked_cfg.datasets[0].path == cfg.datasets[0].path
             assert checked_cfg.datasets[0].type == cfg.datasets[0].type
             assert checked_cfg.chat_template == cfg.chat_template
@@ -231,21 +218,20 @@ class TestValidationCheckDatasetConfig(BaseValidation):
                 == cfg.datasets[0].message_field_content
             )
 
-        _check_config()
-
-        checked_cfg = validate_config(
-            cfg,
-            capabilities={
-                "bf16": "false",
-                "n_gpu": 1,
-                "compute_capability": "8.0",
-            },
-            env_capabilities={
-                "torch_version": "2.6.0",
-            },
+        _check_config(validate_config(cfg))
+        _check_config(
+            validate_config(
+                cfg,
+                capabilities={
+                    "bf16": "false",
+                    "n_gpu": 1,
+                    "compute_capability": "8.0",
+                },
+                env_capabilities={
+                    "torch_version": "2.6.0",
+                },
+            )
         )
-
-        _check_config()
 
     def test_dataset_sharegpt_deprecation(self, minimal_cfg):
         cfg = DictDefault(
