@@ -378,10 +378,13 @@ class ChatTemplateStrategy(PromptTokenizingStrategy):
         """
         Public method that can handle either a single prompt or a batch of prompts.
         """
+
         def _remove_none_values(obj):
             if hasattr(obj, "items"):
-                return {k: _remove_none_values(v) for k, v in obj.items() if v is not None}
-            elif isinstance(obj, list):
+                return {
+                    k: _remove_none_values(v) for k, v in obj.items() if v is not None
+                }
+            if isinstance(obj, list):
                 return [_remove_none_values(elem) for elem in obj]
             return obj
 
@@ -423,9 +426,7 @@ class ChatTemplateStrategy(PromptTokenizingStrategy):
                 add_generation_prompt=True,
                 images=images,
             )
-            tokenized_res = self.prompter.build_prompt(
-                turns, images=images
-            )  # type: ignore
+            tokenized_res = self.prompter.build_prompt(turns, images=images)  # type: ignore
             tokenized_prompt = {}
             if isinstance(tokenized_res, list):
                 input_ids = prompt_ids + tokenized_res[len(prompt_ids) :]
