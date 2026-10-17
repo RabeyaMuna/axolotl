@@ -1,5 +1,9 @@
 from pydantic import BaseModel, Field
 
+"""
+StableMax integration configuration arguments.
+"""
+
 
 class StableMaxArgs(BaseModel):
     """
