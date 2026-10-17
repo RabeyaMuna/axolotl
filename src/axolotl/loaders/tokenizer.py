@@ -73,9 +73,9 @@ def modify_tokenizer_files(
                 for token_id, new_value in token_id_mappings.items():
                     token_id_str = str(token_id)
                     if token_id_str in config_data["added_tokens_decoder"]:
-                        config_data["added_tokens_decoder"][token_id_str][
-                            "content"
-                        ] = new_value
+                        config_data["added_tokens_decoder"][token_id_str]["content"] = (
+                            new_value
+                        )
                     else:
                         raise ValueError(
                             f"Token ID {token_id_str} not found in added_tokens_decoder"
@@ -192,6 +192,10 @@ def load_tokenizer(cfg: DictDefault) -> PreTrainedTokenizer:
         additional_special_tokens = special_tokens.pop(
             "additional_special_tokens", None
         )
+        if additional_special_tokens is not None and not isinstance(
+            additional_special_tokens, list
+        ):
+            additional_special_tokens = [additional_special_tokens]
         lora_modules_to_save = get_linear_embedding_layers(model_config.model_type)
         for k, val in special_tokens.items():
             # check if new special token is not already in tokenizer and
