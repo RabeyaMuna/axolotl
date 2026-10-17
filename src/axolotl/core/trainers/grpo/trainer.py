@@ -43,7 +43,7 @@ from trl.trainer.utils import pad
 
 from axolotl.core.trainers.grpo.sampler import SequenceParallelRepeatRandomSampler
 from axolotl.core.trainers.mixins import RngLoaderMixin, SchedulerMixin
-from axolotl.monkeypatch.attention.ring_attn.patch import get_ring_attn_group
+from axolotl.monkeypatch.attention.ring_attn import get_ring_attn_group
 
 if is_peft_available():
     # pylint: disable=unused-import
@@ -305,8 +305,9 @@ class AxolotlGRPOSequenceParallelTrainer(AxolotlGRPOTrainer):
                         # Extract prompts from this SP group, accounting for num_generations duplicates
                         # We only need prompts from one rank in each SP group
                         group_prompts = all_prompts_text[
-                            group_leader_rank
-                            * len(prompts_text) : (group_leader_rank + 1)
+                            group_leader_rank * len(prompts_text) : (
+                                group_leader_rank + 1
+                            )
                             * len(prompts_text) : self.num_generations
                         ]
 
