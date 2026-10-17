@@ -59,7 +59,6 @@ from axolotl.monkeypatch.multipack import (
     SUPPORTED_MULTIPACK_MODEL_TYPES,
     patch_for_multipack,
 )
-from axolotl.monkeypatch.ring_attn.patch import get_ring_attn_group
 from axolotl.prompt_tokenizers import LLAMA_DEFAULT_EOS_TOKEN
 from axolotl.utils.bench import log_gpu_memory_usage
 from axolotl.utils.chat_templates import get_chat_template_from_config
@@ -272,9 +271,9 @@ def modify_tokenizer_files(
                 for token_id, new_value in token_id_mappings.items():
                     token_id_str = str(token_id)
                     if token_id_str in config_data["added_tokens_decoder"]:
-                        config_data["added_tokens_decoder"][token_id_str][
-                            "content"
-                        ] = new_value
+                        config_data["added_tokens_decoder"][token_id_str]["content"] = (
+                            new_value
+                        )
                     else:
                         raise ValueError(
                             f"Token ID {token_id_str} not found in added_tokens_decoder"
