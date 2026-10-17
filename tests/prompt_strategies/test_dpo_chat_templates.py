@@ -5,11 +5,9 @@ tests for chat_template prompt strategy
 import unittest
 
 import pytest
+from axolotl.utils.dict import DictDefault
 from datasets import Dataset
 from transformers import AutoTokenizer
-
-from axolotl.prompt_strategies.dpo.chat_template import default
-from axolotl.utils.dict import DictDefault
 
 from tests.hf_offline_utils import enable_hf_offline
 
@@ -103,6 +101,8 @@ class TestAssistantDPOChatTemplateLlama3:
 
     def test_llama3_defaults(self, llama3_tokenizer, assistant_dataset):
         # pylint: disable=duplicate-code
+        from axolotl.prompt_strategies.dpo_chat_template import default
+
         transform_fn = default(
             DictDefault(
                 {
@@ -128,6 +128,8 @@ class TestAssistantDPOChatTemplateLlama3:
 
     def test_llama3_configured(self, llama3_tokenizer, custom_assistant_dataset):
         # pylint: disable=duplicate-code
+        from axolotl.prompt_strategies.dpo_chat_template import default
+
         transform_fn = default(
             DictDefault(
                 {
@@ -169,6 +171,8 @@ class TestAssistantDPOChatTemplatePhi3:
 
     def test_phi3_defaults(self, phi3_tokenizer, assistant_dataset):
         # pylint: disable=duplicate-code
+        from axolotl.prompt_strategies.dpo_chat_template import default
+
         transform_fn = default(
             DictDefault(
                 {
@@ -199,6 +203,8 @@ class TestAssistantDPOChatTemplateGemma:
 
     def test_gemma_defaults(self, gemma_tokenizer, assistant_dataset):
         # pylint: disable=duplicate-code
+        from axolotl.prompt_strategies.dpo_chat_template import default
+
         transform_fn = default(
             DictDefault(
                 {
