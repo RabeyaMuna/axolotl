@@ -308,7 +308,7 @@ def _load_or_create_dataset_split(
     if dataset is None:
         dataset = load_preprocessed_dataset(cfg, dataset_hash)
 
-    # Otherwise, load it
+    # Otherwise, load and process it
     if dataset is None:
         dataset = _load_split(cfg, split=split)
 

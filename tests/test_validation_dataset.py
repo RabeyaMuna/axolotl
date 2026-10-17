@@ -4,7 +4,6 @@ import warnings
 from typing import Optional
 
 import pytest
-
 from axolotl.utils.config import validate_config
 from axolotl.utils.dict import DictDefault
 from axolotl.utils.schemas.datasets import ChatTemplate
@@ -24,7 +23,7 @@ def fixture_cfg():
     )
 
 
-# pylint: disable=too-many-public-methods (duplicate-code)
+# pylint: disable=too-many-public-methods,duplicate-code
 class BaseValidation:
     """
     Base validation module to setup the log capture
