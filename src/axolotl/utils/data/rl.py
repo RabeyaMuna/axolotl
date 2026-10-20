@@ -289,7 +289,7 @@ def _load_or_create_dataset_split(
         split: Dataset split to load.
 
     Returns:
-        Tuple of (dataset, is_preprocessed).
+        The loaded or created dataset.
     """
     # Select correct dataset configuration based on split
     datasets_config = cfg.datasets if split == "train" else cfg.test_datasets
