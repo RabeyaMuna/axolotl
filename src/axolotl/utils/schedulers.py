@@ -315,7 +315,7 @@ class JaggedLRRestartScheduler(LRScheduler):
         self.min_lr_scale = min_lr_scale
         super().__init__(optimizer, inner_schedule.last_epoch, inner_schedule.verbose)
 
-    def get_lr(self) -> float | Sequence[float]:
+    def get_lr(self) -> float | Sequence[float]:  # pylint: disable=duplicate-code
         self.inner_schedule.last_epoch = self.last_epoch
 
         original = self.inner_schedule.get_lr()

@@ -289,6 +289,7 @@ class ReLoRAScheduler(LRScheduler):
             elif per_relora_progress > (self.relora_steps - self.anneal_steps):
                 cycle_t = min(
                     1.0,
+                    # pylint: disable=duplicate-code
                     (self.relora_steps - per_relora_progress) / self.anneal_steps,
                 )
             else:
@@ -297,7 +298,7 @@ class ReLoRAScheduler(LRScheduler):
 
         if isinstance(original, Sequence):
             return [lr * scale for lr in original]
-        return original * scale
+        return original * scale  # pylint: disable=duplicate-code
 
 
 def sharded_paths(path: str, module_names: List[str]) -> Dict[str, str]:
