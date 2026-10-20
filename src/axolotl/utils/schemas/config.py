@@ -1100,7 +1100,11 @@ class AxolotlConfigWCapabilities(AxolotlInputConfig):
     @model_validator(mode="before")
     @classmethod
     def check_qat_config(cls, data):
-        qat_cfg = data.get("qat", {})
+        qat_cfg = data.get("qat")
+        if not qat_cfg:
+            return data
+        if not isinstance(qat_cfg, dict):
+            qat_cfg = {}
         if not qat_cfg:
             return data
 
@@ -1139,9 +1143,8 @@ class AxolotlConfigWCapabilities(AxolotlInputConfig):
 
         if data.get("fsdp_config") and str(data.get("fsdp_version")) == "2":
             if version.parse(torch_version) < version.parse("2.7.0"):
-                raise ValueError(
-                    "FSDP2 and QAT are not supported on torch version < 2.7.0"
-                )
+                raise ValueError("FSDP2 is not supported on torch version < 2.7.0")
+        return data
 
     @model_validator(mode="before")
     @classmethod
