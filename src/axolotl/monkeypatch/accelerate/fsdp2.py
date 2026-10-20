@@ -206,8 +206,7 @@ def fsdp2_prepare_model(accelerator, model: torch.nn.Module) -> torch.nn.Module:
     )
 
     is_type_fsdp = isinstance(model, FSDPModule) or (
-        is_compiled_module(model)
-        and isinstance(model._orig_mod, FSDPModule)  # pylint: disable=protected-access
+        is_compiled_module(model) and isinstance(model._orig_mod, FSDPModule)  # pylint: disable=protected-access
     )
     if is_type_fsdp:
         return model
@@ -254,7 +253,9 @@ def fsdp2_prepare_model(accelerator, model: torch.nn.Module) -> torch.nn.Module:
         "offload_policy": fsdp2_plugin.cpu_offload,
         # `fully_shard` doesn't accept `None` in case of `MixedPrecisionPolicy`
         "mp_policy": fsdp2_plugin.mixed_precision_policy or MixedPrecisionPolicy(),
-        "mesh": accelerator.state.device_mesh[accelerator.state.parallelism_config.model_shard_dim_names]
+        "mesh": accelerator.state.device_mesh[
+            accelerator.state.parallelism_config.model_shard_dim_names
+        ],
     }
     if accelerator.state.device_mesh and accelerator.state.parallelism_config:
         fsdp2_kwargs
