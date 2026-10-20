@@ -115,6 +115,7 @@ class TestAssistantDPOChatTemplateLlama3:
                 }
             )
         )
+        # pylint: disable=not-callable
         result = transform_fn(assistant_dataset[0], tokenizer=llama3_tokenizer)
         assert result["prompt"] == (
             "<|begin_of_text|>"
@@ -150,6 +151,7 @@ class TestAssistantDPOChatTemplateLlama3:
                 }
             )
         )
+        # pylint: disable=not-callable
         result = transform_fn(custom_assistant_dataset[0], tokenizer=llama3_tokenizer)
         assert result["prompt"] == (
             "<|begin_of_text|>"
@@ -181,6 +183,7 @@ class TestAssistantDPOChatTemplatePhi3:
                 }
             )
         )
+        # pylint: disable=not-callable
         result = transform_fn(assistant_dataset[0], tokenizer=phi3_tokenizer)
         assert result["prompt"] == (
             "<|user|>\nhello<|end|>\n"
@@ -211,6 +214,7 @@ class TestAssistantDPOChatTemplateGemma:
                 }
             )
         )
+        # pylint: disable=not-callable
         result = transform_fn(assistant_dataset[0], tokenizer=gemma_tokenizer)
         assert result["prompt"] == (
             "<bos><start_of_turn>user\nhello<end_of_turn>\n"
