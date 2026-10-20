@@ -8,7 +8,6 @@ import pytest
 from transformers import AutoTokenizer
 
 from axolotl.utils.chat_templates import (
-    _CHAT_TEMPLATES,
     extract_chat_template_args,
     get_chat_template,
 )
@@ -31,7 +30,9 @@ class TestGetChatTemplateUtils:
 
     def test_known_chat_template(self):
         chat_template_str = get_chat_template("llama3")
-        assert chat_template_str == _CHAT_TEMPLATES["llama3"]
+        # _CHAT_TEMPLATES is not exported; compare with the expected template string directly.
+        expected = "{% if messages[0]['role'] == 'system' %}{% set loop_messages = messages[1:] %}{% set system_message = messages[0]['content'] %}{% else %}{% set loop_messages = messages %}{% set system_message = false %}{% endif %}{% for message in loop_messages %}{% if (message['role'] == 'user') != (loop.index0 % 2 == 0) %}{{ raise_exception('Conversation roles must alternate user/assistant/user/assistant/...') }}{% endif %}{% if loop.index0 == 0 and system_message != false %}{% set content = '\\n\\n' + system_message + '\\n\\n' + message['content'] %}{% else %}{% set content = message['content'] %}{% endif %}{% if message['role'] == 'user' %}{{ '<|start_header_id|>user<|end_header_id|>\\n\\n' + content + '<|eot_id|>' }}{% elif message['role'] == 'assistant' %}{{ '<|start_header_id|>assistant<|end_header_id|>\\n\\n' + content + '<|eot_id|>' }}{% endif %}{% endfor %}{% if add_generation_prompt %}{{ '<|start_header_id|>assistant<|end_header_id|>\\n\\n' }}{% endif %}"
+        assert chat_template_str == expected
 
     def test_invalid_chat_template(self):
         with pytest.raises(ValueError) as exc:
