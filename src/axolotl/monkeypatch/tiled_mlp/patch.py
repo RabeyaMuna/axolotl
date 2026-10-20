@@ -19,7 +19,6 @@ from .fsdp import TiledMLPFSDP
 def patch_tiled_mlp_distributed(
     tiled_mlp_cls, model_type, use_original_mlp=False, cfg_num_shards=None
 ):
-
     try:
         # Dynamically import the module and MLP class
         module_path = f"transformers.models.{model_type}.modeling_{model_type}"
