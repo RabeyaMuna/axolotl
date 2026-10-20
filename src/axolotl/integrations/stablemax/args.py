@@ -1,3 +1,6 @@
+"""
+StableMax integration configuration arguments.
+"""
 from pydantic import BaseModel, Field
 
 
