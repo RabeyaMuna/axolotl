@@ -26,7 +26,7 @@ class TestPreprocess:
                         "type": "alpaca",
                         "split": "train[:10%]",
                     },
-                ],
+                ],  # pylint: disable=duplicate-code
                 "num_epochs": 1,
                 "micro_batch_size": 2,
                 "gradient_accumulation_steps": 1,
