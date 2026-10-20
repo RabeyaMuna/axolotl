@@ -211,7 +211,7 @@ def test_magistral_chat_template(magistral_tokenizer: "HFMistralTokenizer"):
                 {"role": "assistant", "content": "The multiples of 16 is 1 and 2."},
             ],
         }
-    )
+    )  # pylint: disable=duplicate-code
 
     # fmt: off
     assert res["input_ids"] == [
