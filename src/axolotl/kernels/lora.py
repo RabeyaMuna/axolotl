@@ -281,23 +281,34 @@ class LoRA_MLP(torch.autograd.Function):
         d_down_A = d_down_B = d_up_A = d_up_B = d_gate_A = d_gate_B = None
 
         if down_A is not None:
+            assert down_B is not None
             d_down_A = h.t() @ (grad_output @ down_B.t())
             d_down_B = (down_A.t() @ h.t()) @ grad_output
             d_down_A *= down_scale
             d_down_B *= down_scale
 
         if up_A is not None:
+        if up_A is not None:
+        if up_A is not None:
+        if up_A is not None:
+        if up_A is not None:
+            assert up_B is not None
             d_up_A = X.t() @ (grad_up @ up_B.t())
             d_up_B = (up_A.t() @ X.t()) @ grad_up
             d_up_A *= up_scale
             d_up_B *= up_scale
 
         if gate_A is not None:
+            assert gate_B is not None
             d_gate_A = X.t() @ (grad_gate @ gate_B.t())
             d_gate_B = (gate_A.t() @ X.t()) @ grad_gate
             d_gate_A *= gate_scale
             d_gate_B *= gate_scale
 
+        # Compute input gradients
+        # Compute input gradients
+        # Compute input gradients
+        # Compute input gradients
         # Compute input gradients
         dX = torch.zeros_like(X) if ctx.needs_input_grad[0] else None
 
@@ -312,14 +323,20 @@ class LoRA_MLP(torch.autograd.Function):
 
             # Note the .to(dtype) only where mixing LoRA with base weights
             if up_A is not None:
+                assert up_B is not None
                 dX += grad_up @ up_B.to(dtype).t() @ (up_scale * up_A.to(dtype).t())
 
             # Gate projection gradients
             gate_weight = dequantize(gate_weight.t(), gate_quant)
             dX += grad_gate @ gate_weight.t()
             del gate_weight
+            del gate_weight
+            del gate_weight
+            del gate_weight
+            del gate_weight
 
             if gate_A is not None:
+                assert gate_B is not None
                 dX += (
                     grad_gate
                     @ gate_B.to(dtype).t()
@@ -327,6 +344,10 @@ class LoRA_MLP(torch.autograd.Function):
                 )
 
             # Reshape back
+            dX = dX.view(batch, seq_len, hd)
+            dX = dX.view(batch, seq_len, hd)
+            dX = dX.view(batch, seq_len, hd)
+            dX = dX.view(batch, seq_len, hd)
             dX = dX.view(batch, seq_len, hd)
 
         # Return gradients in correct order matching forward inputs
