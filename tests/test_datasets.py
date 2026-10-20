@@ -411,12 +411,10 @@ class TestDatasetPreparation:
         with tempfile.TemporaryDirectory() as tmp_dir:
             tmp_ds_path = Path(tmp_dir) / "mhenrichsen/alpaca_2k_test"
             tmp_ds_path.mkdir(parents=True, exist_ok=True)
-            snapshot_path = snapshot_download(
-                repo_id="mhenrichsen/alpaca_2k_test",
-                repo_type="dataset",
-                local_dir=tmp_ds_path,
-            )
-            shutil.copytree(snapshot_path, tmp_ds_path, dirs_exist_ok=True)
+            # Use a local dataset fixture to avoid online download during offline tests
+            # The fixture 'dataset_fixture' provides a local dataset path
+            local_dataset_path = self.dataset_fixture()
+            shutil.copytree(local_dataset_path, tmp_ds_path, dirs_exist_ok=True)
 
             prepared_path = Path(tmp_dir) / "prepared"
             cfg = DictDefault(
@@ -438,4 +436,4 @@ class TestDatasetPreparation:
             assert "input_ids" in dataset.features
             assert "attention_mask" in dataset.features
             assert "labels" in dataset.features
-            shutil.rmtree(tmp_ds_path)
+            # No need to manually remove tmp_ds_path as it's inside the TemporaryDirectory
