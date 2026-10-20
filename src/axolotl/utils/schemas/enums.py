@@ -13,8 +13,7 @@ if version.parse(torch_version) < version.parse("2.6.0"):
         """Dummy class for import guarding"""
 
 else:
-
-    class TorchIntDType(Enum):
+    pass
         """Torch integer data types"""
 
         uint1 = torch.uint1  # pylint: disable=invalid-name
