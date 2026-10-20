@@ -14,7 +14,7 @@ from axolotl.utils.dict import DictDefault
 AXOLOTL_ROOT = Path(__file__).parent.parent.parent.parent
 
 
-@require_torch_2_6_0
+@pytest.mark.require_torch_2_6_0
 class TestFSDP2:
     """Test class for FSDP2 functionality."""
 
