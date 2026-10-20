@@ -116,8 +116,7 @@ class DatasetValidationMixin:
             and not data.get("eval_table_size")
         ):
             LOG.info(
-                "explicitly setting `eval_sample_packing` to match `sample_packing`",
-                main_process_only=True,
+                "explicitly setting `eval_sample_packing` to match `sample_packing`"
             )
             data["eval_sample_packing"] = True
 
