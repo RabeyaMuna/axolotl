@@ -11,6 +11,8 @@ from transformers.testing_utils import get_torch_dist_unique_port
 
 from axolotl.utils.dict import DictDefault
 
+from tests.e2e.utils import require_torch_2_6_0
+
 AXOLOTL_ROOT = Path(__file__).parent.parent.parent.parent
 
 
