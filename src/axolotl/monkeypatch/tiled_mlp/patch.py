@@ -11,9 +11,9 @@ from deepspeed.runtime.sequence_parallel.ulysses_sp import TiledMLP
 from axolotl.utils.callbacks.models import get_causal_lm_model_cls_prefix
 from axolotl.utils.logging import get_logger
 
-LOG = get_logger(__name__)
-
 from .fsdp import TiledMLPFSDP
+
+LOG = get_logger(__name__)
 
 
 def patch_tiled_mlp_distributed(
