@@ -651,10 +651,10 @@ class RLValidationMixin:
     @model_validator(mode="before")
     @classmethod
     def check_grpo_liger_sequence_parallel(cls, data):
+        trl_cfg = data.get("trl") or {}
         if (
             data.get("rl") == "grpo"
-            and data.get("trl", {})
-            and data.get("trl").get("use_liger_loss")
+            and trl_cfg.get("use_liger_loss")
             and data.get("sequence_parallel_degree", 1) > 1
         ):
             raise ValueError("GRPO + SP + Liger not currently supported")
@@ -754,7 +754,7 @@ class OptimizationValidationMixin:
     @model_validator(mode="before")
     @classmethod
     def check_fsdp_version(cls, data):
-        fsdp_config = data.get("fsdp_config", {})
+        fsdp_config = data.get("fsdp_config") or {}
         if fsdp_config and str(data.get("fsdp_version")) != "2":
             LOG.info(
                 "FSDP1 will be deprecated in an upcoming release of Axolotl."
@@ -799,13 +799,14 @@ class OptimizationValidationMixin:
     @model_validator(mode="before")
     @classmethod
     def check_fsdp_version_in_fsdp_config(cls, data):
-        if data.get("fsdp_config"):
-            if data.get("fsdp_config", {}).get("fsdp_version"):
+        fsdp_config = data.get("fsdp_config") or {}
+        if fsdp_config:
+            if fsdp_config.get("fsdp_version"):
                 LOG.warning(
                     "Configuring `fsdp_version` in `fsdp_config` is deprecated. "
                     "Please configure `fsdp_version` as a top-level field."
                 )
-                data["fsdp_version"] = data.get("fsdp_config").pop("fsdp_version")
+                data["fsdp_version"] = fsdp_config.pop("fsdp_version")
         return data
 
     @model_validator(mode="before")
@@ -1035,7 +1036,7 @@ class PretrainingValidationMixin:
     def check_pretraining_split_batches_accelerate(cls, data):
         # alternatively set ACCELERATE_SPLIT_BATCHES=False
         if data.get("pretraining_dataset"):
-            accelerator_config = data.get("accelerator_config", {})
+            accelerator_config = data.get("accelerator_config") or {}
             if not accelerator_config:
                 data["accelerator_config"] = {
                     "split_batches": False,

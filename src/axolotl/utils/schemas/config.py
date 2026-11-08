@@ -1077,7 +1077,7 @@ class AxolotlConfigWCapabilities(AxolotlInputConfig):
     @classmethod
     def check_adopt_torch_version(cls, data):
         if (data.get("optimizer") is not None) and ("adopt" in data.get("optimizer")):
-            env_capabilities = data.get("env_capabilities", {})
+            env_capabilities = data.get("env_capabilities") or {}
             torch_version = env_capabilities.get("torch_version")
 
             if torch_version is None:
@@ -1095,7 +1095,7 @@ class AxolotlConfigWCapabilities(AxolotlInputConfig):
     @classmethod
     def check_flex_torch_version(cls, data):
         if (data.get("flex_attention") is not None) and (data.get("flex_attention")):
-            env_capabilities = data.get("env_capabilities", {})
+            env_capabilities = data.get("env_capabilities") or {}
             torch_version = env_capabilities.get("torch_version")
 
             if torch_version is None:
@@ -1113,7 +1113,7 @@ class AxolotlConfigWCapabilities(AxolotlInputConfig):
     @classmethod
     def check_torch_compile_auto(cls, data):
         if data.get("torch_compile") == "auto":
-            env_capabilities = data.get("env_capabilities", {})
+            env_capabilities = data.get("env_capabilities") or {}
             if env_capabilities.get("torch_version"):
                 if version.parse(
                     env_capabilities.get("torch_version")
@@ -1131,8 +1131,9 @@ class AxolotlConfigWCapabilities(AxolotlInputConfig):
     @model_validator(mode="before")
     @classmethod
     def check_beta_and_trl_beta_match(cls, data):
-        if data.get("beta") and data.get("trl", {}).get("beta"):
-            if data["beta"] != data["trl"]["beta"]:
+        trl_cfg = data.get("trl") or {}
+        if data.get("beta") and trl_cfg.get("beta"):
+            if data["beta"] != trl_cfg["beta"]:
                 raise ValueError("beta and trl.beta must match or one must be removed")
         return data
 
@@ -1150,7 +1151,7 @@ class AxolotlConfigWCapabilities(AxolotlInputConfig):
     @model_validator(mode="before")
     @classmethod
     def check_qat_config(cls, data):
-        qat_cfg = data.get("qat", {})
+        qat_cfg = data.get("qat") or {}
         if not qat_cfg:
             return data
 
@@ -1163,7 +1164,7 @@ class AxolotlConfigWCapabilities(AxolotlInputConfig):
         if data.get("load_in_4bit"):
             raise ValueError("QAT and load_in_4bit cannot be used together.")
 
-        env_capabilities = data.get("env_capabilities", {})
+        env_capabilities = data.get("env_capabilities") or {}
         torch_version = env_capabilities.get("torch_version")
 
         if torch_version is None:
@@ -1179,7 +1180,7 @@ class AxolotlConfigWCapabilities(AxolotlInputConfig):
     @model_validator(mode="before")
     @classmethod
     def check_fsdp_torch_version(cls, data):
-        env_capabilities = data.get("env_capabilities", {})
+        env_capabilities = data.get("env_capabilities") or {}
         torch_version = env_capabilities.get("torch_version")
 
         if torch_version is None:
