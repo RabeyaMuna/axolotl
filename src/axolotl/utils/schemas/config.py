@@ -1179,12 +1179,15 @@ class AxolotlConfigWCapabilities(AxolotlInputConfig):
                     )
         return data
 
-
     @model_validator(mode="before")
     @classmethod
     def check_fsdp2_lora_torch_2_7(cls, data):
-        
-        if data.get("fsdp_version") == 2 and data.get("fsdp_config") and data.get("adapter") == "lora":
+
+        if (
+            data.get("fsdp_version") == 2
+            and data.get("fsdp_config")
+            and data.get("adapter") == "lora"
+        ):
 
             env_capabilities = data.get("env_capabilities", {})
             torch_version = env_capabilities.get("torch_version")
