@@ -18,6 +18,7 @@ from axolotl.cli.args import (
     VllmServeCliArgs,
 )
 from axolotl.cli.art import print_axolotl_text_art
+from axolotl.cli.lm_eval import lm_eval
 from axolotl.cli.utils import (
     add_options_from_config,
     add_options_from_dataclass,
@@ -27,7 +28,6 @@ from axolotl.cli.utils import (
     generate_config_files,
     launch_training,
 )
-from axolotl.integrations.lm_eval.cli import lm_eval
 from axolotl.utils import patch_optimized_env
 from axolotl.utils.logging import get_logger
 from axolotl.utils.schemas.config import AxolotlInputConfig
