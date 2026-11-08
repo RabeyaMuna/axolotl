@@ -10,10 +10,6 @@ from huggingface_hub import hf_hub_download
 from mistral_common.tokens.tokenizers.mistral import (
     MistralTokenizer as _MistralTokenizer,
 )
-from mistral_common.tokens.tokenizers.tekken import (
-    SpecialTokenPolicy,
-    Tekkenizer,
-)
 from torch import Tensor
 from transformers.utils import PaddingStrategy
 
@@ -48,8 +44,7 @@ class HFMistralTokenizer:
         """
         self._mistral = mistral
         self._padding_side = "right"
-        self._chat_template = None
-        self._name_or_path = path_or_repo_id
+        self.chat_template = None
         self._tokenizer_path = _get_file_path(path_or_repo_id, "tekken.json")
 
         # Try to load system prompt if available
@@ -62,36 +57,16 @@ class HFMistralTokenizer:
 
         # Make sure special tokens will be kept when decoding
         tokenizer_ = self._mistral.instruct_tokenizer.tokenizer
+        from mistral_common.tokens.tokenizers.tekken import (
+            SpecialTokenPolicy,
+            Tekkenizer,
+        )
 
         is_tekken = isinstance(tokenizer_, Tekkenizer)
         if is_tekken:
-            # Check if special token policy private API is available
-            assert hasattr(
-                tokenizer_, "_special_token_policy"
-            ), "Special token policy not found in mistral-common tokenizer"
             tokenizer_._special_token_policy = SpecialTokenPolicy.KEEP  # type: ignore  # pylint: disable=protected-access
         else:
             raise NotImplementedError(f"Tokenizer {path_or_repo_id} not supported yet")
-
-        # Manual set to training mode
-        from mistral_common.protocol.instruct.validator import (
-            MistralRequestValidator,
-            ValidationMode,
-        )
-
-        # Check if MistralRequestValidator has a _mode attribute.
-        # This is a private API and may change in the future.
-        assert (
-            hasattr(self._mistral, "_chat_completion_request_validator")
-            and isinstance(
-                self._mistral._chat_completion_request_validator,
-                MistralRequestValidator,
-            )
-            and hasattr(self._mistral._chat_completion_request_validator, "_mode")
-        ), "Could not access _mode attribute to set finetuning mode in mistral-common tokenizer."
-        self._mistral._chat_completion_request_validator._mode = (
-            ValidationMode.finetuning
-        )
 
     def _load_system_prompt(self, path_or_repo_id: str) -> str:
         """Load system prompt from local or HF Hub"""
@@ -138,15 +113,6 @@ class HFMistralTokenizer:
     def padding_side(self) -> str:
         return self._padding_side
 
-    @property
-    def name_or_path(self) -> str:
-        return self._name_or_path
-
-    @property
-    def chat_template(self) -> str | None:
-        """Chat template is not supported. Dummy method to satisfy HuggingFace API."""
-        return self._chat_template
-
     def __len__(self) -> int:
         return self._mistral.instruct_tokenizer.tokenizer.n_words
 
@@ -175,6 +141,8 @@ class HFMistralTokenizer:
         """
         Save the Tekken/SentencePiece model file so that from_pretrained can pick it up again.
         """
+        from mistral_common.tokens.tokenizers.tekken import Tekkenizer
+
         inner = self._mistral.instruct_tokenizer.tokenizer
         if isinstance(inner, Tekkenizer):
             # Create the directory and save the model
@@ -261,6 +229,10 @@ class HFMistralTokenizer:
                 raise ValueError(
                     f"Unknown role for use with mistral-common tokenizer: {turn['role']}"
                 )
+
+        # set prefix to True for the last message if it is an assistant message
+        if messages[-1].role == "assistant":
+            messages[-1].prefix = True
 
         tool_calls: list[Tool] = []
         if tools:
