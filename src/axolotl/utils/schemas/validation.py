@@ -357,11 +357,10 @@ class TrainingValidationMixin:
     @model_validator(mode="before")
     @classmethod
     def check_use_reentrant_mismatch(cls, data):
+        gradient_checkpointing_kwargs = data.get("gradient_checkpointing_kwargs") or {}
         if (
             data.get("unfrozen_parameters")
-            and data.get("gradient_checkpointing_kwargs")
-            and data.get("gradient_checkpointing_kwargs", {}).get("use_reentrant")
-            is True
+            and gradient_checkpointing_kwargs.get("use_reentrant") is True
         ):
             # https://github.com/huggingface/transformers/issues/21381
             raise ValueError(
@@ -577,11 +576,10 @@ class LoRAValidationMixin:
     @model_validator(mode="before")
     @classmethod
     def warn_qlora_zero3_w_use_reentrant(cls, data):
+        gradient_checkpointing_kwargs = data.get("gradient_checkpointing_kwargs") or {}
         if (
             data.get("adapter") == "qlora"
-            and data.get("gradient_checkpointing_kwargs", {})
-            and data.get("gradient_checkpointing_kwargs", {}).get("use_reentrant")
-            is False
+            and gradient_checkpointing_kwargs.get("use_reentrant") is False
             and data.get("deepspeed", "") is not None
             and "zero3" in data.get("deepspeed", "")
         ):
@@ -646,10 +644,10 @@ class RLValidationMixin:
     @model_validator(mode="before")
     @classmethod
     def check_grpo_liger_sequence_parallel(cls, data):
+        trl_cfg = data.get("trl") or {}
         if (
             data.get("rl") == "grpo"
-            and data.get("trl", {})
-            and data.get("trl").get("use_liger_loss")
+            and trl_cfg.get("use_liger_loss")
             and data.get("sequence_parallel_degree", 1) > 1
         ):
             raise ValueError("GRPO + SP + Liger not currently supported")
@@ -662,15 +660,15 @@ class RLValidationMixin:
         # Distributed RL with QLoRA + gradient checkpointing
         # and use_reentrant = True is broken upstream in TRL
         # pylint: disable=too-many-boolean-expressions
+        gradient_checkpointing_kwargs = data.get("gradient_checkpointing_kwargs") or {}
+        capabilities = data.get("capabilities") or {}
         if (
             data.get("rl")
             and data.get("gradient_checkpointing")
-            and data.get("gradient_checkpointing_kwargs")
-            and data.get("gradient_checkpointing_kwargs").get("use_reentrant")
+            and gradient_checkpointing_kwargs.get("use_reentrant")
             and data.get("load_in_4bit")
             and data.get("adapter") == "qlora"
-            and data.get("capabilities")
-            and data.get("capabilities").get("n_gpu", 1) > 1
+            and capabilities.get("n_gpu", 1) > 1
         ):
             raise ValueError(
                 "The `use_reentrant: True` implementation of gradient checkpointing "
@@ -749,12 +747,13 @@ class OptimizationValidationMixin:
     @model_validator(mode="before")
     @classmethod
     def check_fsdp_offload_w_8bit_optimizer(cls, data):
+        fsdp_config = data.get("fsdp_config") or {}
         if (
             data.get("fsdp")
             and "8bit" in data.get("optimizer", "")
-            and data.get("fsdp_config")
-            and data["fsdp_config"].get("fsdp_offload_params")
-            and str(data["fsdp_config"].get("fsdp_version")) != "2"
+            and fsdp_config
+            and fsdp_config.get("fsdp_offload_params")
+            and str(fsdp_config.get("fsdp_version")) != "2"
         ):
             raise ValueError(
                 f"FSDP Offload not compatible with {data.get('optimizer')}"
@@ -762,8 +761,8 @@ class OptimizationValidationMixin:
         if (
             data.get("fsdp")
             and "8bit" in data.get("optimizer", "")
-            and data.get("fsdp_config")
-            and str(data["fsdp_config"].get("fsdp_version")) == "2"
+            and fsdp_config
+            and str(fsdp_config.get("fsdp_version")) == "2"
         ):
             if data.get("optimizer", "") in ["adamw_8bit", "adamw_bnb_8bit"]:
                 # CUDA ops errors with bnb 8bit optimizer + FSDP2
@@ -776,11 +775,11 @@ class OptimizationValidationMixin:
     @model_validator(mode="before")
     @classmethod
     def check_fsdp_sharded_state_dict_w_safetensors(cls, data):
+        fsdp_config = data.get("fsdp_config") or {}
         if (
-            data.get("fsdp_config")
+            fsdp_config
             and data.get("save_safetensors")
-            and data.get("fsdp_config")
-            and data["fsdp_config"].get("fsdp_state_dict_type") == "SHARDED_STATE_DICT"
+            and fsdp_config.get("fsdp_state_dict_type") == "SHARDED_STATE_DICT"
         ):
             raise ValueError(
                 "FSDP SHARDED_STATE_DICT not compatible with save_safetensors"
@@ -892,7 +891,7 @@ class PretrainingValidationMixin:
     def check_pretraining_split_batches_accelerate(cls, data):
         # alternatively set ACCELERATE_SPLIT_BATCHES=False
         if data.get("pretraining_dataset"):
-            accelerator_config = data.get("accelerator_config", {})
+            accelerator_config = data.get("accelerator_config") or {}
             if not accelerator_config:
                 data["accelerator_config"] = {
                     "split_batches": False,

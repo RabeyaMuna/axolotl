@@ -1,11 +1,13 @@
 """Utilities for Axolotl Pydantic models"""
 
+from typing import Any
+
 from axolotl.utils.logging import get_logger
 
 LOG = get_logger(__name__)
 
 
-def handle_legacy_message_fields_logic(data: dict) -> dict:
+def handle_legacy_message_fields_logic(data: Any) -> Any:
     """
     Handle backwards compatibility between legacy message field mapping and new property mapping system.
 
@@ -28,6 +30,9 @@ def handle_legacy_message_fields_logic(data: dict) -> dict:
     Raises:
         ValueError: If there are conflicts between legacy and new mappings
     """
+    if not isinstance(data, dict):
+        return data
+
     data = data.copy()  # Create a copy to avoid modifying the original
 
     if data.get("message_property_mappings") is None:
