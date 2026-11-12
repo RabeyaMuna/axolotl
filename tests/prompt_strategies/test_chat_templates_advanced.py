@@ -2,6 +2,8 @@
 tests for chat_template prompt strategy
 """
 
+# pylint: disable=duplicate-code
+
 # pylint: disable=too-many-lines
 
 from copy import deepcopy

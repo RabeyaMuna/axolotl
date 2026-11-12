@@ -1,3 +1,4 @@
+# pylint: disable=duplicate-code
 """Module for testing the validation module for the dataset config"""
 
 import warnings
