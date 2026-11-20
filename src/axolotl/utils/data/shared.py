@@ -310,7 +310,7 @@ def _load_from_data_files(
     dataset_config: DictDefault, load_dataset_kwargs: dict
 ) -> Dataset | IterableDataset | DatasetDict | IterableDatasetDict:
     """Load a dataset from data files."""
-    file_path = None
+    file_path: str | list[str] | None = None
 
     if isinstance(dataset_config.data_files, str):
         file_path = hf_hub_download(
