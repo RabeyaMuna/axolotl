@@ -1,7 +1,7 @@
 """Module containing Dataset functionality"""
 
 import os
-from typing import List, Optional, Union
+from typing import Any, Iterator, List, Optional, Union
 
 import torch
 from datasets import Dataset, IterableDataset
@@ -45,14 +45,14 @@ class TokenizedPromptDataset(Dataset):
             **kwargs,
         )
 
-    def process(self, dataset):
+    def process(self, dataset: Dataset) -> Dataset:
         features = dataset.features.keys()
-        num_proc = min(64, self.process_count if self.process_count else os.cpu_count())
+        num_proc = min(64, self.process_count if self.process_count is not None else (os.cpu_count() or 1))
 
-        map_kwargs = {}
+        map_kwargs: dict = {}
         if self.prompt_tokenizer.supports_batched:
             map_kwargs["batched"] = True
-            map_kwargs["batch_size"] = 1_000
+            map_kwargs["batch_size"] = 1000
 
         if (
             hasattr(self.prompt_tokenizer, "filter_rows")
@@ -78,7 +78,7 @@ def wrap_dataset_for_tokenized_prompt(
     prompt_tokenizer: PromptTokenizingStrategy,
     dataset: Union[Dataset, IterableDataset],
     **kwargs,
-):
+) -> Union[Dataset, IterableDataset]:
     if isinstance(dataset, IterableDataset):
         map_kwargs = {}
         if prompt_tokenizer.supports_batched:
@@ -104,10 +104,10 @@ class ConstantLengthDataset(IterableDataset):
 
     def __init__(  # pylint: disable=super-init-not-called
         self,
-        tokenizer,
-        datasets,
-        seq_length=2048,
-    ):
+        tokenizer: "Any",
+        datasets: List[IterableDataset],
+        seq_length: int = 2048,
+    ) -> None:
         self.tokenizer = tokenizer
         self.concat_token_id = tokenizer.eos_token_id
         self.datasets: List[IterableDataset] = datasets
@@ -122,8 +122,8 @@ class ConstantLengthDataset(IterableDataset):
         else:
             self.tokens_dtype = torch.int64
 
-    def __iter__(self):
-        buffer = {
+    def __iter__(self) -> "Iterator[dict]":
+        buffer: dict[str, list] = {
             "input_ids": [],
             "attention_mask": [],
             "labels": [],

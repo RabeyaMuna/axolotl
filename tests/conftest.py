@@ -9,6 +9,7 @@ import shutil
 import sys
 import tempfile
 import time
+from typing import Generator
 from pathlib import Path
 
 import datasets
@@ -352,7 +353,7 @@ def download_llama32_1b_model_fixture():
 @enable_hf_offline
 def tokenizer_huggyllama(
     download_huggyllama_model_fixture,
-):  # pylint: disable=unused-argument,redefined-outer-name
+) -> AutoTokenizer:  # pylint: disable=unused-argument,redefined-outer-name
     tokenizer = AutoTokenizer.from_pretrained("huggyllama/llama-7b")
     tokenizer.pad_token = "</s>"
 
@@ -362,8 +363,8 @@ def tokenizer_huggyllama(
 @pytest.fixture
 @enable_hf_offline
 def tokenizer_huggyllama_w_special_tokens(
-    tokenizer_huggyllama,
-):  # pylint: disable=redefined-outer-name
+    tokenizer_huggyllama: AutoTokenizer,
+) -> AutoTokenizer:  # pylint: disable=redefined-outer-name
     tokenizer_huggyllama.add_special_tokens(
         {
             "bos_token": "<s>",
@@ -379,7 +380,7 @@ def tokenizer_huggyllama_w_special_tokens(
 @enable_hf_offline
 def tokenizer_llama2_7b(
     download_llama2_model_fixture,
-):  # pylint: disable=unused-argument,redefined-outer-name
+) -> AutoTokenizer:  # pylint: disable=unused-argument,redefined-outer-name
     tokenizer = AutoTokenizer.from_pretrained("NousResearch/Llama-2-7b-hf")
 
     return tokenizer
@@ -389,12 +390,12 @@ def tokenizer_llama2_7b(
 @enable_hf_offline
 def tokenizer_mistral_7b_instruct(
     download_mlx_mistral_7b_model_fixture,
-):  # pylint: disable=unused-argument,redefined-outer-name
+) -> AutoTokenizer:  # pylint: disable=unused-argument,redefined-outer-name
     return AutoTokenizer.from_pretrained("casperhansen/mistral-7b-instruct-v0.1-awq")
 
 
 @pytest.fixture
-def tokenizer_mistral_7b_instruct_chatml(tokenizer_mistral_7b_instruct):
+def tokenizer_mistral_7b_instruct_chatml(tokenizer_mistral_7b_instruct: AutoTokenizer) -> AutoTokenizer:
     tokenizer_mistral_7b_instruct.add_special_tokens(
         {
             "eos_token": AddedToken(
@@ -411,7 +412,7 @@ def tokenizer_mistral_7b_instruct_chatml(tokenizer_mistral_7b_instruct):
 
 
 @pytest.fixture
-def temp_dir():
+def temp_dir() -> Generator[str, None, None]:
     # Create a temporary directory
     _temp_dir = tempfile.mkdtemp()
     yield _temp_dir
@@ -420,7 +421,7 @@ def temp_dir():
 
 
 @pytest.fixture(scope="function", autouse=True)
-def cleanup_monkeypatches():
+def cleanup_monkeypatches() -> Generator[None, None, None]:
     from transformers import Trainer
     from transformers.models.llama.modeling_llama import (  # LlamaFlashAttention2,
         LlamaAttention,
@@ -446,7 +447,7 @@ def cleanup_monkeypatches():
     Trainer.training_step = original_trainer_training_step
 
     # Reset other known monkeypatches
-    modules_to_reset: list[tuple[str, list[str]]] = [
+    modules_to_reset: list = [
         ("transformers.models.llama",),
         (
             "transformers.models.llama.modeling_llama",
@@ -478,7 +479,7 @@ def cleanup_monkeypatches():
 @pytest.fixture
 def dataset_winglian_tiny_shakespeare(
     download_ds_fixture_bundle: Path,
-):  # pylint: disable=redefined-outer-name
+) -> datasets.Dataset:  # pylint: disable=redefined-outer-name
     ds_path = download_ds_fixture_bundle / "winglian__tiny-shakespeare"
     return datasets.load_from_disk(ds_path)
 
@@ -486,7 +487,7 @@ def dataset_winglian_tiny_shakespeare(
 @pytest.fixture
 def dataset_tatsu_lab_alpaca(
     download_ds_fixture_bundle: Path,
-):  # pylint: disable=redefined-outer-name
+) -> datasets.Dataset:  # pylint: disable=redefined-outer-name
     ds_path = download_ds_fixture_bundle / "tatsu-lab__alpaca"
     return datasets.load_from_disk(ds_path)["train"]
 
@@ -494,7 +495,7 @@ def dataset_tatsu_lab_alpaca(
 @pytest.fixture
 def dataset_mhenrichsen_alpaca_2k_test(
     download_ds_fixture_bundle: Path,
-):  # pylint: disable=redefined-outer-name
+) -> datasets.Dataset:  # pylint: disable=redefined-outer-name
     ds_path = download_ds_fixture_bundle / "mhenrichsen__alpaca_2k_test"
     return datasets.load_from_disk(ds_path)["train"]
 
@@ -502,7 +503,7 @@ def dataset_mhenrichsen_alpaca_2k_test(
 @pytest.fixture
 def dataset_argilla_ultrafeedback_binarized_preferences_cleaned(
     download_ds_fixture_bundle: Path,
-):  # pylint: disable=redefined-outer-name
+) -> datasets.Dataset:  # pylint: disable=redefined-outer-name
     ds_path = (
         download_ds_fixture_bundle
         / "argilla__ultrafeedback-binarized-preferences-cleaned"
@@ -513,7 +514,7 @@ def dataset_argilla_ultrafeedback_binarized_preferences_cleaned(
 @pytest.fixture
 def dataset_fozziethebeat_alpaca_messages_2k_dpo_test(
     download_ds_fixture_bundle: Path,
-):  # pylint: disable=redefined-outer-name
+) -> datasets.Dataset:  # pylint: disable=redefined-outer-name
     ds_path = download_ds_fixture_bundle / "fozziethebeat__alpaca_messages_2k_dpo_test"
     return datasets.load_from_disk(ds_path)["train"]
 
@@ -521,7 +522,7 @@ def dataset_fozziethebeat_alpaca_messages_2k_dpo_test(
 @pytest.fixture
 def dataset_fozziethebeat_alpaca_messages_2k_dpo_test_rev_ea82cff(
     download_ds_fixture_bundle: Path,
-):  # pylint: disable=redefined-outer-name
+) -> datasets.Dataset:  # pylint: disable=redefined-outer-name
     ds_path = (
         download_ds_fixture_bundle
         / "fozziethebeat__alpaca_messages_2k_dpo_test__rev_ea82cff"
@@ -534,7 +535,7 @@ def dataset_fozziethebeat_alpaca_messages_2k_dpo_test_rev_ea82cff(
     os.environ.get("AXOLOTL_IS_CI_CACHE_PRELOAD", "-1") != "1",
     reason="Not running in CI cache preload",
 )
-def test_load_fixtures(
+def test_load_fixtures(  # type: ignore[empty-body]
     download_smollm2_135m_model,
     download_qwen_2_5_half_billion_model,
     download_tatsu_lab_alpaca_dataset,

@@ -4,7 +4,7 @@ import importlib
 import sys
 from pathlib import Path
 from threading import Thread
-from typing import Union
+from typing import Generator, Union
 
 import fire
 import torch
@@ -46,7 +46,7 @@ def do_inference(
     *,
     cfg: DictDefault,
     cli_args: InferenceCliArgs,
-):
+) -> None:
     """
     Runs inference on the command line in a loop. User input is accepted, a chat template
     is (optionally) applied, and the model specified in the `axolotl` config is used to
@@ -165,7 +165,7 @@ def do_inference_gradio(
 
     model = model.to(cfg.device, dtype=cfg.torch_dtype)
 
-    def generate(instruction):
+    def generate(instruction: str) -> "Generator[str, None, None]":
         if not instruction:
             return
         if prompter_module:

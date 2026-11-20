@@ -53,12 +53,12 @@ class BasePlugin:
     add_callbacks_post_trainer(cfg, trainer): Adds callbacks to the trainer after training.
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         """
         Initializes the BasePlugin.
         """
 
-    def register(self, cfg):  # pylint: disable=unused-argument
+    def register(self, cfg: dict) -> None:  # pylint: disable=unused-argument
         """
         Registers the plugin with the given configuration.
 
@@ -74,7 +74,7 @@ class BasePlugin:
         Returns a pydantic model for the plugin's input arguments.
         """
 
-    def load_datasets(self, cfg: DictDefault, preprocess: bool = False):
+    def load_datasets(self, cfg: dict, preprocess: bool = False) -> dict | None:
         """
         Loads and preprocesses the dataset for training.
 
@@ -86,7 +86,7 @@ class BasePlugin:
             dataset_meta: The metadata for the training dataset.
         """
 
-    def pre_model_load(self, cfg):  # pylint: disable=unused-argument
+    def pre_model_load(self, cfg: dict) -> None:  # pylint: disable=unused-argument
         """
         Performs actions before the model is loaded.
 
@@ -97,7 +97,7 @@ class BasePlugin:
             None
         """
 
-    def post_model_build(self, cfg, model):  # pylint: disable=unused-argument
+    def post_model_build(self, cfg: dict, model: object) -> None:  # pylint: disable=unused-argument
         """
         Performs actions after the model is built/loaded, but before any adapters are applied.
 
@@ -105,7 +105,7 @@ class BasePlugin:
             cfg (dict): The configuration for the plugin.
         """
 
-    def post_model_load(self, cfg, model):  # pylint: disable=unused-argument
+    def post_model_load(self, cfg: dict, model: object) -> None:  # pylint: disable=unused-argument
         """
         Performs actions after the model is loaded.
 
@@ -117,7 +117,7 @@ class BasePlugin:
             None
         """
 
-    def pre_lora_load(self, cfg, model):  # pylint: disable=unused-argument
+    def pre_lora_load(self, cfg: dict, model: object) -> None:  # pylint: disable=unused-argument
         """
         Performs actions before LoRA weights are loaded.
 
@@ -129,7 +129,7 @@ class BasePlugin:
             None
         """
 
-    def post_lora_load(self, cfg, model):  # pylint: disable=unused-argument
+    def post_lora_load(self, cfg: dict, model: object) -> None:  # pylint: disable=unused-argument
         """
         Performs actions after LoRA weights are loaded.
 
@@ -141,7 +141,7 @@ class BasePlugin:
             None
         """
 
-    def get_trainer_cls(self, cfg):  # pylint: disable=unused-argument):
+    def get_trainer_cls(self, cfg: dict) -> type | None:  # pylint: disable=unused-argument):
         """
         Returns a custom class for the trainer.
 
@@ -152,7 +152,7 @@ class BasePlugin:
             class: The class for the trainer.
         """
 
-    def post_trainer_create(self, cfg, trainer):  # pylint: disable=unused-argument
+    def post_trainer_create(self, cfg: dict, trainer: object) -> None:  # pylint: disable=unused-argument
         """
         Performs actions after the trainer is created.
 
@@ -177,7 +177,7 @@ class BasePlugin:
         """
 
     def create_lr_scheduler(
-        self, cfg, trainer, optimizer, num_training_steps
+        self, cfg: dict, trainer: object, optimizer: object, num_training_steps: int
     ) -> LRScheduler | None:  # pylint: disable=unused-argument
         """
         Creates and returns a learning rate scheduler.
@@ -192,7 +192,7 @@ class BasePlugin:
             object (LRScheduler): The created learning rate scheduler.
         """
 
-    def add_callbacks_pre_trainer(self, cfg, model):  # pylint: disable=unused-argument
+    def add_callbacks_pre_trainer(self, cfg: dict, model: object) -> list:  # pylint: disable=unused-argument
         """
         setup callbacks before creating the trainer.
 
@@ -206,8 +206,8 @@ class BasePlugin:
         return []
 
     def add_callbacks_post_trainer(
-        self, cfg, trainer
-    ):  # pylint: disable=unused-argument
+        self, cfg: dict, trainer: object
+    ) -> list:  # pylint: disable=unused-argument
         """
         Adds callbacks to the trainer after creating the trainer.
         This is useful for callbacks that require access to the model or trainer.
@@ -221,7 +221,7 @@ class BasePlugin:
         """
         return []
 
-    def post_train(self, cfg, model):  # pylint: disable=unused-argument
+    def post_train(self, cfg: dict, model: object) -> None:  # pylint: disable=unused-argument
         """
         Performs actions after training is complete.
 
@@ -233,7 +233,7 @@ class BasePlugin:
             None
         """
 
-    def post_train_unload(self, cfg):  # pylint: disable=unused-argument
+    def post_train_unload(self, cfg: dict) -> None:  # pylint: disable=unused-argument
         """
         Performs actions after training is complete and the model is unloaded.
 
@@ -304,15 +304,13 @@ class PluginManager:
     _instance = None
     _cfg = None
 
-    def __new__(cls):
+    def __new__(cls) -> "PluginManager":
         """
         Creates a new instance of PluginManager if it doesn't exist yet.
         """
         if cls._instance is None:
             cls._instance = super(PluginManager, cls).__new__(cls)
-            cls._instance.plugins: OrderedDict[str, BasePlugin] = (
-                collections.OrderedDict()
-            )
+            cls._instance.plugins = collections.OrderedDict()
         return cls._instance
 
     @staticmethod
@@ -333,7 +331,7 @@ class PluginManager:
     def cfg(self, cfg):
         self._cfg = cfg
 
-    def register(self, plugin_name: str):
+    def register(self, plugin_name: str) -> None:
         """
         Registers a new plugin by its name.
 
@@ -354,7 +352,7 @@ class PluginManager:
         except ImportError:
             LOG.error(f"Failed to load plugin: {plugin_name}")
 
-    def get_input_args(self):
+    def get_input_args(self) -> list:
         """
         Returns a list of Pydantic classes for all registered plugins' input arguments.'
 
@@ -368,7 +366,7 @@ class PluginManager:
                 input_args.append(input_args_from_plugin)
         return input_args
 
-    def load_datasets(self, cfg, preprocess: bool = False):
+    def load_datasets(self, cfg: dict, preprocess: bool = False) -> dict | None:
         """
         Calls the load_datasets method of each registered plugin.
 
@@ -389,7 +387,7 @@ class PluginManager:
                     raise RuntimeError("Multiple plugins loaded datasets")
         return return_ds_meta
 
-    def pre_model_load(self, cfg):
+    def pre_model_load(self, cfg: dict) -> None:
         """
         Calls the pre_model_load method of all registered plugins.
 
@@ -402,7 +400,7 @@ class PluginManager:
         for plugin in self.plugins.values():
             plugin.pre_model_load(cfg)
 
-    def post_model_build(self, cfg, model):
+    def post_model_build(self, cfg: dict, model: object) -> None:
         """
         Calls the post_model_build method of all registered plugins after the model has been built/loaded,
         but before any adapters have been applied.
@@ -414,7 +412,7 @@ class PluginManager:
         for plugin in self.plugins.values():
             plugin.post_model_build(cfg, model)
 
-    def post_model_load(self, cfg, model):
+    def post_model_load(self, cfg: dict, model: object) -> None:
         """
         Calls the post_model_load method of all registered plugins after the model has been loaded
         inclusive of any adapters
@@ -429,7 +427,7 @@ class PluginManager:
         for plugin in self.plugins.values():
             plugin.post_model_load(cfg, model)
 
-    def pre_lora_load(self, cfg, model):
+    def pre_lora_load(self, cfg: dict, model: object) -> None:
         """
         Calls the pre_lora_load method of all registered plugins.
 
@@ -443,7 +441,7 @@ class PluginManager:
         for plugin in self.plugins.values():
             plugin.pre_lora_load(cfg, model)
 
-    def post_lora_load(self, cfg, model):
+    def post_lora_load(self, cfg: dict, model: object) -> None:
         """
         Calls the post_lora_load method of all registered plugins.
 
@@ -457,7 +455,7 @@ class PluginManager:
         for plugin in self.plugins.values():
             plugin.post_lora_load(cfg, model)
 
-    def get_trainer_cls(self, cfg):
+    def get_trainer_cls(self, cfg: dict) -> type | None:
         """
         Calls the get_trainer_cls method of all registered plugins and returns the first non-None trainer class.
 
@@ -473,7 +471,7 @@ class PluginManager:
                 return trainer_cls
         return None
 
-    def post_trainer_create(self, cfg, trainer):
+    def post_trainer_create(self, cfg: dict, trainer: object) -> None:
         """
         Calls the post_trainer_create method of all registered plugins.
 
@@ -487,7 +485,7 @@ class PluginManager:
         for plugin in self.plugins.values():
             plugin.post_trainer_create(cfg, trainer)
 
-    def create_optimizer(self, trainer):
+    def create_optimizer(self, trainer: object) -> object | None:
         """
         Calls the create_optimizer method of all registered plugins and returns the first non-None optimizer.
 
@@ -504,7 +502,7 @@ class PluginManager:
         return None
 
     def create_lr_scheduler(
-        self, trainer, optimizer, num_training_steps
+        self, trainer: object, optimizer: object, num_training_steps: int
     ) -> LRScheduler | None:
         """
         Calls the create_lr_scheduler method of all registered plugins and returns the first non-None scheduler.
@@ -527,7 +525,7 @@ class PluginManager:
                 return scheduler
         return None
 
-    def add_callbacks_pre_trainer(self, cfg, model):
+    def add_callbacks_pre_trainer(self, cfg: dict, model: object) -> list:
         """
         Calls the add_callbacks_pre_trainer method of all registered plugins.
 
@@ -545,7 +543,7 @@ class PluginManager:
                 callbacks.extend(plugin_callbacks)
         return callbacks
 
-    def add_callbacks_post_trainer(self, cfg, trainer):
+    def add_callbacks_post_trainer(self, cfg: dict, trainer: object) -> list:
         """
         Calls the add_callbacks_post_trainer method of all registered plugins.
 
@@ -563,7 +561,7 @@ class PluginManager:
                 callbacks.extend(plugin_callbacks)
         return callbacks
 
-    def post_train(self, cfg, model):
+    def post_train(self, cfg: dict, model: object) -> None:
         """
         Calls the post_train method of all registered plugins.
 
@@ -577,7 +575,7 @@ class PluginManager:
         for plugin in self.plugins.values():
             plugin.post_train(cfg, model)
 
-    def post_train_unload(self, cfg):
+    def post_train_unload(self, cfg: dict) -> None:
         """
         Calls the post_train_unload method of all registered plugins.
 
@@ -598,6 +596,6 @@ class BaseOptimizerFactory:
     """
 
     def __call__(
-        self, opt_model, training_args, **optimizer_kwargs
+        self, opt_model: object, training_args: object, **optimizer_kwargs: object
     ) -> "torch.optim.Optimizer":
         pass
