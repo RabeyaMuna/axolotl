@@ -404,6 +404,7 @@ class TestDatasetPreparation:
                 assert "labels" in dataset.features
                 shutil.rmtree(tmp_ds_path)
 
+    @pytest.mark.skip("datasets bug with local datasets when offline")
     @enable_hf_offline
     def test_loading_local_dataset_folder(self, tokenizer):
         """Verify that a dataset downloaded to a local folder can be loaded"""
