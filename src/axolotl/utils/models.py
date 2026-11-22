@@ -8,7 +8,7 @@ import math
 import os
 import types
 from functools import cached_property
-from typing import Any, Dict, Optional, Tuple
+from typing import Any
 
 import addict
 import bitsandbytes as bnb
@@ -59,7 +59,6 @@ from axolotl.monkeypatch.multipack import (
     SUPPORTED_MULTIPACK_MODEL_TYPES,
     patch_for_multipack,
 )
-from axolotl.monkeypatch.ring_attn.patch import get_ring_attn_group
 from axolotl.prompt_tokenizers import LLAMA_DEFAULT_EOS_TOKEN
 from axolotl.utils.bench import log_gpu_memory_usage
 from axolotl.utils.chat_templates import get_chat_template_from_config
@@ -225,7 +224,7 @@ def load_model_config(cfg):
 
 
 def modify_tokenizer_files(
-    tokenizer_path: str, token_mappings: Dict[int, str], output_dir: str
+    tokenizer_path: str, token_mappings: dict[int, str], output_dir: str
 ) -> str:
     """
     Modify tokenizer files to replace added_tokens strings, save to output directory, and return the path to the modified tokenizer.
@@ -272,9 +271,9 @@ def modify_tokenizer_files(
                 for token_id, new_value in token_id_mappings.items():
                     token_id_str = str(token_id)
                     if token_id_str in config_data["added_tokens_decoder"]:
-                        config_data["added_tokens_decoder"][token_id_str][
-                            "content"
-                        ] = new_value
+                        config_data["added_tokens_decoder"][token_id_str]["content"] = (
+                            new_value
+                        )
                     else:
                         raise ValueError(
                             f"Token ID {token_id_str} not found in added_tokens_decoder"
@@ -483,7 +482,7 @@ def load_tokenizer(cfg):
 
 
 def load_processor(cfg: DictDefault, tokenizer: PreTrainedTokenizerBase):
-    processor_kwargs: Dict[str, Any] = {}  # do we actually need this?
+    processor_kwargs: dict[str, Any] = {}  # do we actually need this?
 
     processor_cls = AutoProcessor
     if cfg.processor_type:
@@ -545,7 +544,7 @@ class ModelLoader:
         self.reference_model: bool = reference_model
 
         # init model kwargs
-        self.model_kwargs: Dict[str, Any] = {}
+        self.model_kwargs: dict[str, Any] = {}
         if cfg.overrides_of_model_kwargs:
             for key, val in cfg.overrides_of_model_kwargs.items():
                 self.model_kwargs[key] = val
@@ -1017,9 +1016,10 @@ class ModelLoader:
             )
         ):
             quant_storage = self.cfg.torch_dtype
-            quantization_config = hasattr(
-                self.model_config, "quantization_config"
-            ) and getattr(self.model_config, "quantization_config")
+            quantization_config = (
+                hasattr(self.model_config, "quantization_config")
+                and self.model_config.quantization_config
+            )
             quantization_config = (
                 quantization_config or self.model_kwargs["quantization_config"]
             )
@@ -1261,7 +1261,7 @@ class ModelLoader:
 
             apply_lora_kernel_patches(self.model, self.cfg)
 
-    def load_model(self) -> Tuple[PreTrainedModel, Optional[PeftConfig]]:
+    def load_model(self) -> tuple[PreTrainedModel, PeftConfig | None]:
         self.apply_patches()
         self.set_auto_model_loader()
         self.set_device_map_config()
@@ -1390,11 +1390,11 @@ class ModelLoader:
             and not skip_move_to_device
         ):
             # TODO revaldate this conditional
-            self.model.to(f"{str(get_device_type())}:{self.cfg.local_rank}")
+            self.model.to(f"{get_device_type()!s}:{self.cfg.local_rank}")
 
         if get_device_count() > 1 and int(os.getenv("WORLD_SIZE", "1")) == 1:
-            setattr(self.model, "is_parallelizable", True)
-            setattr(self.model, "model_parallel", True)
+            self.model.is_parallelizable = True
+            self.model.model_parallel = True
 
         # ---------------------------------------------------------
         #  parameters that require gradient updates
@@ -1433,7 +1433,7 @@ def load_model(
     inference: bool = False,
     reference_model: bool = False,
     **kwargs,  # pylint: disable=unused-argument
-) -> Tuple[PreTrainedModel, Optional[PeftConfig]]:
+) -> tuple[PreTrainedModel, PeftConfig | None]:
     """
     Load a model for a given configuration and tokenizer.
     """
@@ -1545,7 +1545,7 @@ def load_lora(model, cfg, inference=False, config_only=False):
 
     if cfg.lora_target_linear:
         linear_names = find_all_linear_names(model)
-        LOG.info(f"found linear modules: {repr(sorted(linear_names))}")
+        LOG.info(f"found linear modules: {sorted(linear_names)!r}")
         lora_target_modules_as_list = (
             lora_target_modules
             if isinstance(lora_target_modules, list)
