@@ -24,8 +24,8 @@ class MessageList(BaseModel):
 
 
 def load(
-    tokenizer, cfg, ds_cfg: Optional[Dict[str, Any]] = None, **kwargs
-):  # pylint: disable=possibly-unused-variable,unused-argument
+    tokenizer: Any, cfg: Any, ds_cfg: Optional[Dict[str, Any]] = None, **kwargs: Any
+) -> ORPOTokenizingStrategy:  # pylint: disable=possibly-unused-variable,unused-argument
     """
     chatml transforms for datasets with system, input, chosen, rejected
     """
@@ -46,7 +46,7 @@ def load(
 class ORPODatasetParsingStrategy:
     """Strategy to parse chosen rejected dataset into messagelist"""
 
-    def get_chosen_conversation_thread(self, prompt) -> MessageList:
+    def get_chosen_conversation_thread(self, prompt: Dict[str, Any]) -> MessageList:
         """Dataset structure mappings"""
 
         messages: List[Message] = []
@@ -62,7 +62,7 @@ class ORPODatasetParsingStrategy:
         )
         return MessageList(messages=messages)
 
-    def get_rejected_conversation_thread(self, prompt) -> MessageList:
+    def get_rejected_conversation_thread(self, prompt: Dict[str, Any]) -> MessageList:
         """Dataset structure mappings"""
 
         messages: List[Message] = []
@@ -78,7 +78,7 @@ class ORPODatasetParsingStrategy:
         )
         return MessageList(messages=messages)
 
-    def get_prompt(self, prompt) -> MessageList:
+    def get_prompt(self, prompt: Dict[str, Any]) -> MessageList:
         """Map the data to extract everything up to the last turn"""
         total_msg_len = len(prompt["chosen"])
         total_msg_turns, remainder = divmod(total_msg_len, 2)
@@ -111,7 +111,7 @@ class ORPODatasetParsingStrategy:
 
         return MessageList(messages=messages)
 
-    def get_chosen(self, prompt) -> MessageList:
+    def get_chosen(self, prompt: Dict[str, Any]) -> MessageList:
         res = self.get_prompt(prompt)
         res.messages.append(
             Message(
@@ -120,7 +120,7 @@ class ORPODatasetParsingStrategy:
         )
         return res
 
-    def get_rejected(self, prompt) -> MessageList:
+    def get_rejected(self, prompt: Dict[str, Any]) -> MessageList:
         res = self.get_prompt(prompt)
         res.messages.append(
             Message(
@@ -142,14 +142,14 @@ class ORPOTokenizingStrategy(PromptTokenizingStrategy):
 
     def __init__(
         self,
-        *args,
-        dataset_parser=None,
-        **kwargs,
-    ):
+        *args: Any,
+        dataset_parser: Optional[ORPODatasetParsingStrategy] = None,
+        **kwargs: Any,
+    ) -> None:
         super().__init__(*args, **kwargs)
         self.dataset_parser = dataset_parser
 
-    def tokenize_prompt(self, prompt):
+    def tokenize_prompt(self, prompt: Dict[str, Any]) -> Dict[str, List[int]]:
         # pass the rejected prompt/row to the Prompter to get the formatted prompt
         prompt_len = 0
         rejected_message_list: MessageList = (
@@ -207,7 +207,7 @@ class ORPOTokenizingStrategy(PromptTokenizingStrategy):
 class ORPOPrompter(Prompter):
     """Single Turn prompter for ORPO"""
 
-    def __init__(self, chat_template, tokenizer):
+    def __init__(self, chat_template: str, tokenizer: Any) -> None:
         self.chat_template = chat_template
         self.tokenizer = tokenizer
 
@@ -241,7 +241,7 @@ class ORPOPrompter(Prompter):
                 ), True
 
 
-def argilla(cfg, **kwargs):  # pylint: disable=possibly-unused-variable,unused-argument
+def argilla(cfg: Any, **kwargs: Any) -> Callable[[Dict[str, Any], Optional[Any]], Dict[str, str]]:  # pylint: disable=possibly-unused-variable,unused-argument
     dataset_parser = ORPODatasetParsingStrategy()
 
     def transform_fn(sample, tokenizer=None):

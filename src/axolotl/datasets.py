@@ -35,7 +35,7 @@ class TokenizedPromptDataset(Dataset):
         process_count: int | None = None,
         keep_in_memory: bool | None = False,
         **kwargs,
-    ):
+    ) -> None:
         self.prompt_tokenizer = prompt_tokenizer
         self.process_count = process_count
         self.keep_in_memory = keep_in_memory
@@ -44,7 +44,7 @@ class TokenizedPromptDataset(Dataset):
             **kwargs,
         )
 
-    def process(self, dataset):
+    def process(self, dataset: Dataset) -> Dataset:
         features = dataset.features.keys()
         num_proc = min(64, self.process_count if self.process_count else os.cpu_count())
 
@@ -84,7 +84,7 @@ def wrap_dataset_for_tokenized_prompt(
     prompt_tokenizer: PromptTokenizingStrategy,
     dataset: Dataset | IterableDataset,
     **kwargs,
-):
+) -> Dataset | IterableDataset:
     if isinstance(dataset, IterableDataset):
         map_kwargs = {}
         if prompt_tokenizer.supports_batched:
@@ -111,10 +111,10 @@ class ConstantLengthDataset(IterableDataset):
 
     def __init__(  # pylint: disable=super-init-not-called
         self,
-        tokenizer,
-        datasets,
-        seq_length=2048,
-    ):
+        tokenizer: PreTrainedTokenizer,
+        datasets: list[IterableDataset],
+        seq_length: int = 2048,
+    ) -> None:
         self.tokenizer = tokenizer
         self.concat_token_id = tokenizer.eos_token_id
         self.datasets: list[IterableDataset] = datasets
@@ -129,7 +129,7 @@ class ConstantLengthDataset(IterableDataset):
         else:
             self.tokens_dtype = torch.int64
 
-    def __iter__(self):
+    def __iter__(self) -> Iterator[dict[str, torch.Tensor]]:
         buffer = {
             "input_ids": [],
             "attention_mask": [],

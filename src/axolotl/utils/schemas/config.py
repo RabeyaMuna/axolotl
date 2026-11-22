@@ -1337,7 +1337,7 @@ class AxolotlConfigWCapabilities(AxolotlInputConfig):
     env_capabilities: EnvCapabilities
 
     @model_validator(mode="after")
-    def check_bf16(self):
+    def check_bf16(self) -> "AxolotlConfigWCapabilities":
         if self.capabilities.bf16:
             if not self.bf16 and not self.bfloat16:
                 LOG.info(
@@ -1356,7 +1356,7 @@ class AxolotlConfigWCapabilities(AxolotlInputConfig):
 
     @model_validator(mode="before")
     @classmethod
-    def check_sample_packing_w_sdpa_bf16(cls, data):
+    def check_sample_packing_w_sdpa_bf16(cls, data: Any) -> Any:
         is_sm_90: bool = (
             data["capabilities"]
             and data["capabilities"].get("compute_capability") == "sm_90"
@@ -1377,14 +1377,14 @@ class AxolotlConfigWCapabilities(AxolotlInputConfig):
 
     @model_validator(mode="before")
     @classmethod
-    def check_fsdp_deepspeed(cls, data):
+    def check_fsdp_deepspeed(cls, data: Any) -> Any:
         if data.get("deepspeed") and data.get("fsdp"):
             raise ValueError("deepspeed and fsdp cannot be used together.")
         return data
 
     @model_validator(mode="before")
     @classmethod
-    def check_multigpu_unsloth(cls, data):
+    def check_multigpu_unsloth(cls, data: Any) -> Any:
         if (
             data.get("unsloth_lora_mlp")
             or data.get("unsloth_lora_qkv")
@@ -1399,7 +1399,7 @@ class AxolotlConfigWCapabilities(AxolotlInputConfig):
 
     @model_validator(mode="before")
     @classmethod
-    def check_multigpu_lora_kernels(cls, data):
+    def check_multigpu_lora_kernels(cls, data: Any) -> Any:
         if (
             data.get("lora_mlp_kernel")
             or data.get("lora_qkv_kernel")
@@ -1420,7 +1420,7 @@ class AxolotlConfigWCapabilities(AxolotlInputConfig):
 
     @model_validator(mode="before")
     @classmethod
-    def check_auto_enable_lora_kernels(cls, data):
+    def check_auto_enable_lora_kernels(cls, data: Any) -> Any:
         # Only proceed if using LoRA or QLoRA adapter
         if data.get("rl"):
             # RL trainers not tested so don't enable kernels by default
@@ -1475,7 +1475,7 @@ class AxolotlConfigWCapabilities(AxolotlInputConfig):
 
     @model_validator(mode="before")
     @classmethod
-    def check_adopt_torch_version(cls, data):
+    def check_adopt_torch_version(cls, data: Any) -> Any:
         if (data.get("optimizer") is not None) and ("adopt" in data.get("optimizer")):
             env_capabilities = data.get("env_capabilities", {})
             torch_version = env_capabilities.get("torch_version")
@@ -1493,7 +1493,7 @@ class AxolotlConfigWCapabilities(AxolotlInputConfig):
 
     @model_validator(mode="before")
     @classmethod
-    def check_flex_torch_version(cls, data):
+    def check_flex_torch_version(cls, data: Any) -> Any:
         if (data.get("flex_attention") is not None) and (data.get("flex_attention")):
             env_capabilities = data.get("env_capabilities", {})
             torch_version = env_capabilities.get("torch_version")
@@ -1511,7 +1511,7 @@ class AxolotlConfigWCapabilities(AxolotlInputConfig):
 
     @model_validator(mode="before")
     @classmethod
-    def check_torch_compile_auto(cls, data):
+    def check_torch_compile_auto(cls, data: Any) -> Any:
         if data.get("torch_compile") == "auto":
             env_capabilities = data.get("env_capabilities", {})
             if env_capabilities.get("torch_version"):
@@ -1530,14 +1530,14 @@ class AxolotlConfigWCapabilities(AxolotlInputConfig):
 
     @model_validator(mode="before")
     @classmethod
-    def check_beta_and_trl_beta_match(cls, data):
+    def check_beta_and_trl_beta_match(cls, data: Any) -> Any:
         if data.get("beta") and data.get("trl", {}).get("beta"):
             if data["beta"] != data["trl"]["beta"]:
                 raise ValueError("beta and trl.beta must match or one must be removed")
         return data
 
     @model_validator(mode="after")
-    def check_min_torch_version(self):
+    def check_min_torch_version(self) -> "AxolotlConfigWCapabilities":
         if self.env_capabilities and self.env_capabilities.torch_version:
             torch_version = self.env_capabilities.torch_version
             if version.parse(torch_version) < version.parse("2.5.1"):
@@ -1549,7 +1549,7 @@ class AxolotlConfigWCapabilities(AxolotlInputConfig):
 
     @model_validator(mode="before")
     @classmethod
-    def check_qat_config(cls, data):
+    def check_qat_config(cls, data: Any) -> Any:
         qat_cfg = data.get("qat", {})
         if not qat_cfg:
             return data

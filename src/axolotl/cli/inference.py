@@ -15,7 +15,7 @@ from transformers import GenerationConfig, TextIteratorStreamer, TextStreamer
 from axolotl.cli.args import InferenceCliArgs
 from axolotl.cli.art import print_axolotl_text_art
 from axolotl.cli.config import load_cfg
-from axolotl.cli.utils import load_model_and_tokenizer
+from axolotl.cli.utils import load_model_and_tokenizer  # type: ignore
 from axolotl.utils.chat_templates import (
     get_chat_template,
     get_chat_template_from_config,
@@ -46,7 +46,7 @@ def do_inference(
     *,
     cfg: DictDefault,
     cli_args: InferenceCliArgs,
-):
+) -> None:
     """
     Runs inference on the command line in a loop. User input is accepted, a chat template
     is (optionally) applied, and the model specified in the `axolotl` config is used to
@@ -139,7 +139,7 @@ def do_inference_gradio(
     *,
     cfg: DictDefault,
     cli_args: InferenceCliArgs,
-):
+) -> None:
     """
     Runs inference in a Gradio interface. User input is accepted, a chat template is
     (optionally) applied, and the model specified in the `axolotl` config is used to
@@ -245,7 +245,7 @@ def do_inference_gradio(
 
 
 def do_cli(
-    config: Union[Path, str] = Path("examples/"), gradio: bool = False, **kwargs
+    config: Union[Path, str] = Path("examples/"), gradio: bool = False, **kwargs: Any
 ) -> None:
     """
     Parses axolotl config, CLI args, and calls `do_inference` or `do_inference_gradio`.
