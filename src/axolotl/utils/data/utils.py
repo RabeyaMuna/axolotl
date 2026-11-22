@@ -3,8 +3,8 @@
 import functools
 import hashlib
 import time
-from typing import Optional
 from enum import Enum
+from typing import Optional
 
 import huggingface_hub
 import numpy as np
