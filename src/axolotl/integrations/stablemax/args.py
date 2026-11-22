@@ -1,3 +1,4 @@
+"""Module docstring for StableMaxArgs."""
 from pydantic import BaseModel, Field
 
 

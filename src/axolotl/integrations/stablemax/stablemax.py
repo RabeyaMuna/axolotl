@@ -1,3 +1,9 @@
+"""
+StableMax implementation for stable cross-entropy loss calculations.
+
+This module provides functions for stable max operations and cross-entropy loss
+using StableMax instead of traditional softmax.
+"""
 import torch
 import torch.nn.functional as F
 
@@ -13,7 +19,7 @@ def stablemax_fn(x):
 
 
 def stablemax_cross_entropy(
-    input,
+    logits,
     target,
     weight=None,
     ignore_index=-100,
@@ -36,7 +42,7 @@ def stablemax_cross_entropy(
     Returns:
         loss: scalar or tensor depending on reduction
     """
-    probs = stablemax_fn(input)
+    probs = stablemax_fn(logits)
     log_probs = torch.log(probs + 1e-12)
 
     # Handle target format and create mask for ignore_index
@@ -92,11 +98,10 @@ def stablemax_cross_entropy(
             full_loss[valid_mask] = loss
             return full_loss
         return loss
-    elif reduction == "mean":
+    if reduction == "mean":
         return (
-            loss.mean() if loss.numel() > 0 else torch.tensor(0.0, device=input.device)
+            loss.mean() if loss.numel() > 0 else torch.tensor(0.0, device=logits.device)
         )
-    elif reduction == "sum":
+    if reduction == "sum":
         return loss.sum()
-    else:
-        raise ValueError(f"Invalid reduction mode: {reduction}")
+    raise ValueError(f"Invalid reduction mode: {reduction}")

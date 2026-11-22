@@ -1,6 +1,8 @@
-# StableMax integration entry point
+"""
+StableMax plugin integration for Axolotl.
 
-import torch
+This module provides integration with StableMax functionality.
+"""
 
 from axolotl.integrations.base import BasePlugin
 
