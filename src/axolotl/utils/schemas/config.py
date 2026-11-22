@@ -2,7 +2,6 @@
 
 # pylint: disable=too-many-lines
 
-import os
 from typing import Annotated, Any, Literal
 
 from annotated_types import MinLen
@@ -209,7 +208,7 @@ class AxolotlInputConfig(
         },
     )
     dataset_processes: int | None = Field(
-        default=int(os.environ.get("AXOLOTL_DATASET_PROCESSES", os.cpu_count())),  # type: ignore[type-var]
+        default=None,
         json_schema_extra={
             "description": "The maximum number of processes to use while preprocessing your input dataset. This defaults to `os.cpu_count()` if not set."
         },
