@@ -346,7 +346,7 @@ class AxolotlInputConfig(
 
     @field_validator("datasets", mode="before")
     @classmethod
-    def deprecate_sharegpt_datasets(cls, datasets):
+    def deprecate_sharegpt_datasets(cls, datasets: list[dict[str, Any] | DatasetConfig]) -> list[dict[str, Any] | DatasetConfig]:
         for _, ds_cfg in enumerate(datasets):
             # Handle both dict and pydantic model cases
             ds_type = (
@@ -378,7 +378,7 @@ class AxolotlInputConfig(
 
     @model_validator(mode="before")
     @classmethod
-    def check_attention_fields(cls, data):
+    def check_attention_fields(cls, data: dict[str, Any]) -> dict[str, Any]:
         fields = (
             "xformers_attention",
             "sdp_attention",
@@ -394,7 +394,7 @@ class AxolotlInputConfig(
 
     @model_validator(mode="before")
     @classmethod
-    def check_batch_size_fields(cls, data):
+    def check_batch_size_fields(cls, data: dict[str, Any]) -> dict[str, Any]:
         fields = ("micro_batch_size", "gradient_accumulation_steps", "batch_size")
         non_empty_count = sum(1 for field in fields if data.get(field))
 
@@ -404,7 +404,7 @@ class AxolotlInputConfig(
 
     @model_validator(mode="before")
     @classmethod
-    def check_pretraining_w_max_steps(cls, data):
+    def check_pretraining_w_max_steps(cls, data: dict[str, Any]) -> dict[str, Any]:
         if data.get("pretraining_dataset") and not data.get("max_steps"):
             raise ValueError(
                 "max_steps must be set when using iterable pretraining_dataset, Trainer can't infer length and schedule optimizer/learning rate without it!"
@@ -413,7 +413,7 @@ class AxolotlInputConfig(
 
     @model_validator(mode="before")
     @classmethod
-    def check_pretraining_w_group_by_length(cls, data):
+    def check_pretraining_w_group_by_length(cls, data: dict[str, Any]) -> dict[str, Any]:
         if data.get("pretraining_dataset") and data.get("group_by_length"):
             LOG.warning(
                 "You probably want to disable group_by_length as it will force a streamed dataset to download completely."
@@ -422,7 +422,7 @@ class AxolotlInputConfig(
 
     @model_validator(mode="before")
     @classmethod
-    def check_pretraining_split_batches_accelerate(cls, data):
+    def check_pretraining_split_batches_accelerate(cls, data: dict[str, Any]) -> dict[str, Any]:
         # alternatively set ACCELERATE_SPLIT_BATCHES=False
         if data.get("pretraining_dataset"):
             accelerator_config = data.get("accelerator_config", {})
@@ -440,7 +440,7 @@ class AxolotlInputConfig(
 
     @model_validator(mode="before")
     @classmethod
-    def check_gptq_w_revision(cls, data):
+    def check_gptq_w_revision(cls, data: dict[str, Any]) -> dict[str, Any]:
         if data.get("gptq") and data.get("revision_of_model"):
             raise ValueError(
                 "revision_of_model is not supported for GPTQ models. "
@@ -452,7 +452,7 @@ class AxolotlInputConfig(
     @model_validator(mode="before")
     @classmethod
     # pylint: disable=duplicate-code
-    def check_chat_template_config(cls, data):
+    def check_chat_template_config(cls, data: dict[str, Any]) -> dict[str, Any]:
         # if chat_template is set to jinja, chat_template_jinja is required
         if data.get("chat_template") == ChatTemplate.jinja and not data.get(
             "chat_template_jinja"
@@ -469,7 +469,7 @@ class AxolotlInputConfig(
 
     @model_validator(mode="before")
     @classmethod
-    def check_sample_packing_wo_flash(cls, data):
+    def check_sample_packing_wo_flash(cls, data: dict[str, Any]) -> dict[str, Any]:
         if (
             data.get("sample_packing")
             and not data.get("flash_attention")
@@ -485,7 +485,7 @@ class AxolotlInputConfig(
 
     @model_validator(mode="before")
     @classmethod
-    def check_sample_packing_with_s2attn(cls, data):
+    def check_sample_packing_with_s2attn(cls, data: dict[str, Any]) -> dict[str, Any]:
         if data.get("sample_packing") and data.get("s2_attention"):
             raise ValueError(
                 "Received `sample_packing=true` and `s2_attention=true`; however, \
@@ -495,7 +495,7 @@ class AxolotlInputConfig(
 
     @model_validator(mode="before")
     @classmethod
-    def check_batch_flattening_fa(cls, data):
+    def check_batch_flattening_fa(cls, data: dict[str, Any]) -> dict[str, Any]:
         if data.get("batch_flattening"):
             batch_flattening_auto = data.get("batch_flattening") == "auto"
             if not data.get("flash_attention") and not batch_flattening_auto:
@@ -519,14 +519,14 @@ class AxolotlInputConfig(
 
     @model_validator(mode="before")
     @classmethod
-    def check_sample_packing_w_rl(cls, data):
+    def check_sample_packing_w_rl(cls, data: dict[str, Any]) -> dict[str, Any]:
         if data.get("sample_packing") and data.get("rl"):
             raise ValueError("`sample_packing: true` does not work with RLHF training")
         return data
 
     @model_validator(mode="before")
     @classmethod
-    def hint_sample_packing_padding(cls, data):
+    def hint_sample_packing_padding(cls, data: dict[str, Any]) -> dict[str, Any]:
         if data.get("sample_packing"):
             pad_to_sequence_len = data.get("pad_to_sequence_len")
             if pad_to_sequence_len is False:
@@ -542,7 +542,7 @@ class AxolotlInputConfig(
 
     @model_validator(mode="before")
     @classmethod
-    def hint_reward_model_pad(cls, data):
+    def hint_reward_model_pad(cls, data: dict[str, Any]) -> dict[str, Any]:
         if data.get("reward_model") and not data.get("pad_to_sequence_len"):
             LOG.warning(
                 "`pad_to_sequence_len: true` is recommended when using reward_model"
@@ -553,7 +553,7 @@ class AxolotlInputConfig(
 
     @model_validator(mode="before")
     @classmethod
-    def check_gas_bsz(cls, data):
+    def check_gas_bsz(cls, data: dict[str, Any]) -> dict[str, Any]:
         if data.get("gradient_accumulation_steps") and data.get("batch_size"):
             raise ValueError(
                 "please set only one of gradient_accumulation_steps or batch_size"
@@ -562,7 +562,7 @@ class AxolotlInputConfig(
 
     @model_validator(mode="before")
     @classmethod
-    def hint_eval_train_mbsz(cls, data):
+    def hint_eval_train_mbsz(cls, data: dict[str, Any]) -> dict[str, Any]:
         if (
             data.get("eval_batch_size")
             and data.get("micro_batch_size")
@@ -575,7 +575,7 @@ class AxolotlInputConfig(
 
     @model_validator(mode="before")
     @classmethod
-    def check_push_ds_auth(cls, data):
+    def check_push_ds_auth(cls, data: dict[str, Any]) -> dict[str, Any]:
         if (
             data.get("push_dataset_to_hub")
             and data.get("hf_use_auth_token") is not True
@@ -586,13 +586,13 @@ class AxolotlInputConfig(
         return data
 
     @model_validator(mode="after")
-    def check_falcon_fsdp(self):
+    def check_falcon_fsdp(self) -> "AxolotlInputConfig":
         if (self.base_model and "falcon" in self.base_model.lower()) and self.fsdp:
             raise ValueError("FSDP is not supported for falcon models")
         return self
 
     @model_validator(mode="after")
-    def check_mpt_checkpointing(self):
+    def check_mpt_checkpointing(self) -> "AxolotlInputConfig":
         if (
             self.base_model and "mpt" in self.base_model.lower()
         ) and self.gradient_checkpointing:
@@ -600,7 +600,7 @@ class AxolotlInputConfig(
         return self
 
     @model_validator(mode="after")
-    def check_offload_grad_checkpointing(self):
+    def check_offload_grad_checkpointing(self) -> "AxolotlInputConfig":
         if self.gradient_checkpointing and self.gradient_checkpointing == "unsloth":
             LOG.warning(
                 "`unsloth` is deprecated for gradient_checkpointing, use `offload`"
@@ -609,7 +609,7 @@ class AxolotlInputConfig(
         return self
 
     @model_validator(mode="after")
-    def check_better_transformers(self):
+    def check_better_transformers(self) -> "AxolotlInputConfig":
         if self.flash_optimum is True:
             if self.adapter:
                 LOG.warning(
@@ -625,7 +625,7 @@ class AxolotlInputConfig(
         return self
 
     @model_validator(mode="after")
-    def check_adamw_optimizer_params(self):
+    def check_adamw_optimizer_params(self) -> "AxolotlInputConfig":
         if any([self.adam_beta1, self.adam_beta2, self.adam_epsilon]) and (
             not self.optimizer or "adamw" not in str(self.optimizer).lower()
         ):
@@ -634,14 +634,14 @@ class AxolotlInputConfig(
 
     @model_validator(mode="before")
     @classmethod
-    def check_lr_groups(cls, data):
+    def check_lr_groups(cls, data: dict[str, Any]) -> dict[str, Any]:
         if data.get("lr_groups") and data.get("loraplus_lr_ratio"):
             raise ValueError("lr_groups and loraplus_lr_ratio cannot be used together.")
         return data
 
     @model_validator(mode="before")
     @classmethod
-    def check_saves(cls, data):
+    def check_saves(cls, data: dict[str, Any]) -> dict[str, Any]:
         if (
             data.get("save_strategy")
             and data.get("save_steps")
@@ -658,7 +658,7 @@ class AxolotlInputConfig(
 
     @model_validator(mode="before")
     @classmethod
-    def check_push_save(cls, data):
+    def check_push_save(cls, data: dict[str, Any]) -> dict[str, Any]:
         if data.get("hub_model_id") and (
             data.get("save_strategy") not in ["steps", "epoch", None]
         ):

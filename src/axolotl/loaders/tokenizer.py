@@ -256,7 +256,7 @@ def load_tokenizer(cfg: DictDefault) -> PreTrainedTokenizer:
     # ```
     if additional_special_tokens is not None:
         tokenizer.add_special_tokens(
-            {"additional_special_tokens": additional_special_tokens}
+            {"additional_special_tokens": list(additional_special_tokens)}
         )
 
     if is_main_process(use_environ=True):

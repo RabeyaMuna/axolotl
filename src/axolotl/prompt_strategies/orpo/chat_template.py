@@ -24,8 +24,8 @@ class MessageList(BaseModel):
 
 
 def load(
-    tokenizer, cfg, ds_cfg: Optional[Dict[str, Any]] = None, **kwargs
-):  # pylint: disable=possibly-unused-variable,unused-argument
+    tokenizer: Any, cfg: Any, ds_cfg: Optional[Dict[str, Any]] = None, **kwargs: Any
+) -> ORPOTokenizingStrategy:  # pylint: disable=possibly-unused-variable,unused-argument
     """
     chatml transforms for datasets with system, input, chosen, rejected
     """
@@ -241,11 +241,11 @@ class ORPOPrompter(Prompter):
                 ), True
 
 
-def argilla(cfg, **kwargs):  # pylint: disable=possibly-unused-variable,unused-argument
+def argilla(cfg: Any, **kwargs: Any) -> Callable:  # pylint: disable=possibly-unused-variable,unused-argument
     dataset_parser = ORPODatasetParsingStrategy()
 
-    def transform_fn(sample, tokenizer=None):
-        res = {}
+    def transform_fn(sample: Any, tokenizer: Optional[Any] = None) -> Dict[str, str]:
+        res: Dict[str, str] = {}
 
         chat_template_string = get_chat_template_from_config(
             cfg=cfg, tokenizer=tokenizer

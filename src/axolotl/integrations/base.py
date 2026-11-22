@@ -70,10 +70,10 @@ class BasePlugin:
             training.
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         """Initializes the BasePlugin."""
 
-    def register(self, cfg: DictDefault):  # pylint: disable=unused-argument
+    def register(self, cfg: DictDefault) -> None:  # pylint: disable=unused-argument
         """Registers the plugin with the given configuration.
 
         Args:
@@ -96,7 +96,7 @@ class BasePlugin:
             dataset_meta: The metadata for the training dataset.
         """
 
-    def pre_model_load(self, cfg: DictDefault):  # pylint: disable=unused-argument
+    def pre_model_load(self, cfg: DictDefault) -> None:  # pylint: disable=unused-argument
         """Performs actions before the model is loaded.
 
         Args:
@@ -104,15 +104,16 @@ class BasePlugin:
         """
 
     # pylint: disable=unused-argument
-    def post_model_build(self, cfg: DictDefault, model: PreTrainedModel):
+    def post_model_build(self, cfg: DictDefault, model: PreTrainedModel) -> None:
         """Performs actions after the model is built/loaded, but before any adapters are applied.
 
         Args:
             cfg: The configuration for the plugin.
+            model: The loaded model.
         """
 
     # pylint: disable=unused-argument
-    def pre_lora_load(self, cfg: DictDefault, model: PreTrainedModel):
+    def pre_lora_load(self, cfg: DictDefault, model: PreTrainedModel) -> None:
         """Performs actions before LoRA weights are loaded.
 
         Args:
@@ -121,7 +122,7 @@ class BasePlugin:
         """
 
     # pylint: disable=unused-argument
-    def post_lora_load(self, cfg: DictDefault, model: PreTrainedModel | PeftModel):
+    def post_lora_load(self, cfg: DictDefault, model: PreTrainedModel | PeftModel) -> None:
         """Performs actions after LoRA weights are loaded.
 
         Args:
@@ -130,7 +131,7 @@ class BasePlugin:
         """
 
     # pylint: disable=unused-argument
-    def post_model_load(self, cfg: DictDefault, model: PreTrainedModel | PeftModel):
+    def post_model_load(self, cfg: DictDefault, model: PreTrainedModel | PeftModel) -> None:
         """Performs actions after the model is loaded.
 
         Args:
@@ -139,7 +140,7 @@ class BasePlugin:
         """
 
     # pylint: disable=unused-argument
-    def get_trainer_cls(self, cfg: DictDefault) -> Trainer | None:
+    def get_trainer_cls(self, cfg: DictDefault) -> type[Trainer] | None:
         """Returns a custom class for the trainer.
 
         Args:
@@ -150,7 +151,7 @@ class BasePlugin:
         """
 
     # pylint: disable=unused-argument
-    def post_trainer_create(self, cfg: DictDefault, trainer: Trainer):
+    def post_trainer_create(self, cfg: DictDefault, trainer: Trainer) -> None:
         """Performs actions after the trainer is created.
 
         Args:
@@ -222,7 +223,7 @@ class BasePlugin:
         return []
 
     # pylint: disable=unused-argument
-    def post_train(self, cfg: DictDefault, model: PreTrainedModel | PeftModel):
+    def post_train(self, cfg: DictDefault, model: PreTrainedModel | PeftModel) -> None:
         """Performs actions after training is complete.
 
         Args:
@@ -230,7 +231,7 @@ class BasePlugin:
             model: The loaded model.
         """
 
-    def post_train_unload(self, cfg: DictDefault):  # pylint: disable=unused-argument
+    def post_train_unload(self, cfg: DictDefault) -> None:  # pylint: disable=unused-argument
         """Performs actions after training is complete and the model is unloaded.
 
         Args:
@@ -297,7 +298,7 @@ class PluginManager:
     _instance: PluginManager | None = None
     _cfg: DictDefault | None = None
 
-    def __new__(cls):
+    def __new__(cls) -> "PluginManager":
         """Creates a new instance of PluginManager if it doesn't exist yet."""
         if cls._instance is None:
             cls._instance = super(PluginManager, cls).__new__(cls)
@@ -316,14 +317,14 @@ class PluginManager:
         return PluginManager._instance  # type: ignore
 
     @property
-    def cfg(self):
+    def cfg(self) -> Any:
         return self._cfg
 
     @cfg.setter
-    def cfg(self, cfg):
+    def cfg(self, cfg: Any) -> None:
         self._cfg = cfg
 
-    def register(self, plugin_name: str):
+    def register(self, plugin_name: str) -> None:
         """Registers a new plugin by its name.
 
         Args:
@@ -375,7 +376,7 @@ class PluginManager:
                     raise RuntimeError("Multiple plugins loaded datasets")
         return return_ds_meta
 
-    def pre_model_load(self, cfg: DictDefault):
+    def pre_model_load(self, cfg: DictDefault) -> None:
         """Calls the pre_model_load method of all registered plugins.
 
         Args:
@@ -384,7 +385,7 @@ class PluginManager:
         for plugin in self.plugins.values():
             plugin.pre_model_load(cfg)
 
-    def post_model_build(self, cfg: DictDefault, model: PreTrainedModel):
+    def post_model_build(self, cfg: DictDefault, model: PreTrainedModel) -> None:
         """Calls the `post_model_build` method of all registered plugins after the
         model has been built / loaded, but before any adapters have been applied.
 
@@ -395,7 +396,7 @@ class PluginManager:
         for plugin in self.plugins.values():
             plugin.post_model_build(cfg, model)
 
-    def pre_lora_load(self, cfg: DictDefault, model: PreTrainedModel):
+    def pre_lora_load(self, cfg: DictDefault, model: PreTrainedModel) -> None:
         """Calls the `pre_lora_load` method of all registered plugins.
 
         Args:
@@ -405,7 +406,7 @@ class PluginManager:
         for plugin in self.plugins.values():
             plugin.pre_lora_load(cfg, model)
 
-    def post_lora_load(self, cfg: DictDefault, model: PreTrainedModel | PeftModel):
+    def post_lora_load(self, cfg: DictDefault, model: PreTrainedModel | PeftModel) -> None:
         """Calls the `post_lora_load` method of all registered plugins.
 
         Args:
@@ -415,7 +416,7 @@ class PluginManager:
         for plugin in self.plugins.values():
             plugin.post_lora_load(cfg, model)
 
-    def post_model_load(self, cfg: DictDefault, model: PreTrainedModel | PeftModel):
+    def post_model_load(self, cfg: DictDefault, model: PreTrainedModel | PeftModel) -> None:
         """Calls the `post_model_load` method of all registered plugins after the model
         has been loaded inclusive of any adapters.
 
@@ -426,7 +427,7 @@ class PluginManager:
         for plugin in self.plugins.values():
             plugin.post_model_load(cfg, model)
 
-    def get_trainer_cls(self, cfg: DictDefault) -> Trainer | None:
+    def get_trainer_cls(self, cfg: DictDefault) -> type[Trainer] | None:
         """Calls the `get_trainer_cls` method of all registered plugins and returns the
         first non-`None` trainer class.
 
@@ -442,7 +443,7 @@ class PluginManager:
                 return trainer_cls
         return None
 
-    def post_trainer_create(self, cfg: DictDefault, trainer: Trainer):
+    def post_trainer_create(self, cfg: DictDefault, trainer: Trainer) -> None:
         """Calls the `post_trainer_create` method of all registered plugins.
 
         Args:
@@ -530,7 +531,7 @@ class PluginManager:
                 callbacks.extend(plugin_callbacks)
         return callbacks
 
-    def post_train(self, cfg: DictDefault, model: PreTrainedModel | PeftModel):
+    def post_train(self, cfg: DictDefault, model: PreTrainedModel | PeftModel) -> None:
         """Calls the post_train method of all registered plugins.
 
         Args:
@@ -540,7 +541,7 @@ class PluginManager:
         for plugin in self.plugins.values():
             plugin.post_train(cfg, model)
 
-    def post_train_unload(self, cfg: DictDefault):
+    def post_train_unload(self, cfg: DictDefault) -> None:
         """Calls the post_train_unload method of all registered plugins.
 
         Args:
@@ -554,6 +555,6 @@ class BaseOptimizerFactory:
     """Base class for factories to create custom optimizers"""
 
     def __call__(
-        self, opt_model, training_args, **optimizer_kwargs
+        self, opt_model: Any, training_args: Any, **optimizer_kwargs: Any
     ) -> Optimizer | None:
         pass

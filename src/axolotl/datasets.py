@@ -104,10 +104,10 @@ class ConstantLengthDataset(IterableDataset):
 
     def __init__(  # pylint: disable=super-init-not-called
         self,
-        tokenizer,
-        datasets,
-        seq_length=2048,
-    ):
+        tokenizer: PreTrainedTokenizer,
+        datasets: list[IterableDataset],
+        seq_length: int = 2048,
+    ) -> None:
         self.tokenizer = tokenizer
         self.concat_token_id = tokenizer.eos_token_id
         self.datasets: list[IterableDataset] = datasets
@@ -122,7 +122,7 @@ class ConstantLengthDataset(IterableDataset):
         else:
             self.tokens_dtype = torch.int64
 
-    def __iter__(self):
+    def __iter__(self) -> Iterator[dict[str, torch.Tensor]]:
         buffer = {
             "input_ids": [],
             "attention_mask": [],
