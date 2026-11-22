@@ -355,8 +355,8 @@ def download_llama32_1b_model_fixture():
 @pytest.fixture
 @enable_hf_offline
 def tokenizer_huggyllama(
-    download_huggyllama_model_fixture,
-):  # pylint: disable=unused-argument,redefined-outer-name
+    download_huggyllama_model_fixture: Any,
+) -> PreTrainedTokenizer:  # pylint: disable=unused-argument,redefined-outer-name
     tokenizer = AutoTokenizer.from_pretrained("huggyllama/llama-7b")
     tokenizer.pad_token = "</s>"
 
@@ -366,8 +366,8 @@ def tokenizer_huggyllama(
 @pytest.fixture
 @enable_hf_offline
 def tokenizer_huggyllama_w_special_tokens(
-    tokenizer_huggyllama,
-):  # pylint: disable=redefined-outer-name
+    tokenizer_huggyllama: PreTrainedTokenizer,
+) -> PreTrainedTokenizer:  # pylint: disable=redefined-outer-name
     tokenizer_huggyllama.add_special_tokens(
         {
             "bos_token": "<s>",
@@ -382,8 +382,8 @@ def tokenizer_huggyllama_w_special_tokens(
 @pytest.fixture
 @enable_hf_offline
 def tokenizer_llama2_7b(
-    download_llama2_model_fixture,
-):  # pylint: disable=unused-argument,redefined-outer-name
+    download_llama2_model_fixture: Any,
+) -> PreTrainedTokenizer:  # pylint: disable=unused-argument,redefined-outer-name
     tokenizer = AutoTokenizer.from_pretrained("NousResearch/Llama-2-7b-hf")
 
     return tokenizer
@@ -392,13 +392,13 @@ def tokenizer_llama2_7b(
 @pytest.fixture
 @enable_hf_offline
 def tokenizer_mistral_7b_instruct(
-    download_mlx_mistral_7b_model_fixture,
-):  # pylint: disable=unused-argument,redefined-outer-name
+    download_mlx_mistral_7b_model_fixture: Any,
+) -> PreTrainedTokenizer:  # pylint: disable=unused-argument,redefined-outer-name
     return AutoTokenizer.from_pretrained("casperhansen/mistral-7b-instruct-v0.1-awq")
 
 
 @pytest.fixture
-def tokenizer_mistral_7b_instruct_chatml(tokenizer_mistral_7b_instruct):
+def tokenizer_mistral_7b_instruct_chatml(tokenizer_mistral_7b_instruct: PreTrainedTokenizer) -> PreTrainedTokenizer:
     tokenizer_mistral_7b_instruct.add_special_tokens(
         {
             "eos_token": AddedToken(
@@ -424,7 +424,7 @@ def temp_dir() -> Generator[str, None, None]:
 
 
 @pytest.fixture(scope="function", autouse=True)
-def cleanup_monkeypatches():
+def cleanup_monkeypatches() -> Generator[None, None, None]:
     from transformers import Trainer
     from transformers.models.llama.modeling_llama import (  # LlamaFlashAttention2,
         LlamaAttention,
@@ -482,7 +482,7 @@ def cleanup_monkeypatches():
 @pytest.fixture
 def dataset_winglian_tiny_shakespeare(
     download_ds_fixture_bundle: Path,
-):  # pylint: disable=redefined-outer-name
+) -> Dataset:  # pylint: disable=redefined-outer-name
     ds_path = download_ds_fixture_bundle / "winglian__tiny-shakespeare"
     return datasets.load_from_disk(ds_path)
 
@@ -490,7 +490,7 @@ def dataset_winglian_tiny_shakespeare(
 @pytest.fixture
 def dataset_tatsu_lab_alpaca(
     download_ds_fixture_bundle: Path,
-):  # pylint: disable=redefined-outer-name
+) -> Dataset:  # pylint: disable=redefined-outer-name
     ds_path = download_ds_fixture_bundle / "tatsu-lab__alpaca"
     return datasets.load_from_disk(ds_path)["train"]
 
@@ -498,7 +498,7 @@ def dataset_tatsu_lab_alpaca(
 @pytest.fixture
 def dataset_mhenrichsen_alpaca_2k_test(
     download_ds_fixture_bundle: Path,
-):  # pylint: disable=redefined-outer-name
+) -> Dataset:  # pylint: disable=redefined-outer-name
     ds_path = download_ds_fixture_bundle / "mhenrichsen__alpaca_2k_test"
     return datasets.load_from_disk(ds_path)["train"]
 
@@ -506,7 +506,7 @@ def dataset_mhenrichsen_alpaca_2k_test(
 @pytest.fixture
 def dataset_argilla_ultrafeedback_binarized_preferences_cleaned(
     download_ds_fixture_bundle: Path,
-):  # pylint: disable=redefined-outer-name
+) -> Dataset:  # pylint: disable=redefined-outer-name
     ds_path = (
         download_ds_fixture_bundle
         / "argilla__ultrafeedback-binarized-preferences-cleaned"
@@ -517,7 +517,7 @@ def dataset_argilla_ultrafeedback_binarized_preferences_cleaned(
 @pytest.fixture
 def dataset_fozziethebeat_alpaca_messages_2k_dpo_test(
     download_ds_fixture_bundle: Path,
-):  # pylint: disable=redefined-outer-name
+) -> Dataset:  # pylint: disable=redefined-outer-name
     ds_path = download_ds_fixture_bundle / "fozziethebeat__alpaca_messages_2k_dpo_test"
     return datasets.load_from_disk(ds_path)["train"]
 
@@ -525,7 +525,7 @@ def dataset_fozziethebeat_alpaca_messages_2k_dpo_test(
 @pytest.fixture
 def dataset_fozziethebeat_alpaca_messages_2k_dpo_test_rev_ea82cff(
     download_ds_fixture_bundle: Path,
-):  # pylint: disable=redefined-outer-name
+) -> Dataset:  # pylint: disable=redefined-outer-name
     ds_path = (
         download_ds_fixture_bundle
         / "fozziethebeat__alpaca_messages_2k_dpo_test__rev_ea82cff"
@@ -539,27 +539,27 @@ def dataset_fozziethebeat_alpaca_messages_2k_dpo_test_rev_ea82cff(
     reason="Not running in CI cache preload",
 )
 def test_load_fixtures(
-    download_smollm2_135m_model,
-    download_qwen_2_5_half_billion_model,
-    download_tatsu_lab_alpaca_dataset,
-    download_mhenrichsen_alpaca_2k_dataset,
-    download_mhenrichsen_alpaca_2k_w_revision_dataset,
-    download_mlabonne_finetome_100k_dataset,
-    download_argilla_distilabel_capybara_dpo_7k_binarized_dataset,
-    download_arcee_ai_distilabel_intel_orca_dpo_pairs_dataset,
-    download_argilla_dpo_pairs_dataset,
-    download_tiny_shakespeare_dataset,
-    download_deepseek_model_fixture,
-    download_huggyllama_model_fixture,
-    download_llama_1b_model_fixture,
-    download_llama3_8b_model_fixture,
-    download_llama3_8b_instruct_model_fixture,
-    download_phi_35_mini_model_fixture,
-    download_phi_3_medium_model_fixture,
-    download_mistral_7b_model_fixture,
-    download_gemma_2b_model_fixture,
-    download_gemma2_9b_model_fixture,
-    download_mlx_mistral_7b_model_fixture,
-    download_llama2_model_fixture,
-):
+    download_smollm2_135m_model: Any,
+    download_qwen_2_5_half_billion_model: Any,
+    download_tatsu_lab_alpaca_dataset: Any,
+    download_mhenrichsen_alpaca_2k_dataset: Any,
+    download_mhenrichsen_alpaca_2k_w_revision_dataset: Any,
+    download_mlabonne_finetome_100k_dataset: Any,
+    download_argilla_distilabel_capybara_dpo_7k_binarized_dataset: Any,
+    download_arcee_ai_distilabel_intel_orca_dpo_pairs_dataset: Any,
+    download_argilla_dpo_pairs_dataset: Any,
+    download_tiny_shakespeare_dataset: Any,
+    download_deepseek_model_fixture: Any,
+    download_huggyllama_model_fixture: Any,
+    download_llama_1b_model_fixture: Any,
+    download_llama3_8b_model_fixture: Any,
+    download_llama3_8b_instruct_model_fixture: Any,
+    download_phi_35_mini_model_fixture: Any,
+    download_phi_3_medium_model_fixture: Any,
+    download_mistral_7b_model_fixture: Any,
+    download_gemma_2b_model_fixture: Any,
+    download_gemma2_9b_model_fixture: Any,
+    download_mlx_mistral_7b_model_fixture: Any,
+    download_llama2_model_fixture: Any,
+) -> None:
     pass
