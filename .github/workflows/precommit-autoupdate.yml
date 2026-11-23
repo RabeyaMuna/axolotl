@@ -2,21 +2,26 @@ name: Pre-commit auto-update
 
 on:
   schedule:
-    - cron: '0 0 * * 0'  # Run weekly
+    - cron: '0 0 1 * *'  # Run monthly
   workflow_dispatch:  # Manual kickoff
+
+permissions: {}
 
 jobs:
   auto-update:
     runs-on: ubuntu-latest
+    if: ${{ github.repository_owner == 'axolotl-ai-cloud' }}
     permissions:
       contents: write
       pull-requests: write
     steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          python-version: '3.11'
+          persist-credentials: false
+
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: '3.12'
 
       - name: Update pre-commit hooks
         id: update
@@ -25,12 +30,11 @@ jobs:
           pre-commit autoupdate
           if [[ -n $(git status --porcelain) ]]; then
             echo "changes=true" >> $GITHUB_OUTPUT
-            git diff .pre-commit-config.yaml > pre-commit-update.diff
           fi
 
       - name: Create Pull Request
         if: steps.update.outputs.changes == 'true'
-        uses: peter-evans/create-pull-request@v6
+        uses: peter-evans/create-pull-request@15733dbdfeedb4f7fdb73d13c6f5ac83b710fab8 # v8.1.2
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           branch: update/pre-commit-hooks
@@ -39,11 +43,3 @@ jobs:
           commit-message: "chore: update pre-commit hooks"
           body: |
             Automated PR to update pre-commit hooks to their latest versions.
-
-            <details>
-            <summary>Changes:</summary>
-
-            ```diff
-            ${{ steps.update.outputs.diff }}
-            ```
-            </details>
